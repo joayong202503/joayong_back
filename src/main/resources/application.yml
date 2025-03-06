@@ -1,0 +1,64 @@
+
+server:
+  port: 8999
+
+# database setting
+spring:
+
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: riyo1753@naver.com
+    password: PD3859M7XWCJ
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+
+  #file upload setting
+  servlet:
+    multipart:
+      max-file-size: 10MB   #업로드 파일 1개 최대용량 (대문자로 써야함)
+      max-request-size: 100MB   #한번에 업로드랗 수 있는 파일의 총 용량 (대문자로 써야함)
+
+  datasource:
+    url: jdbc:mariadb://localhost:3306/joayong
+    username: root
+    password: mariadb
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    # DBMS dialect setting
+    #    show-sql: true
+    database-platform: org.hibernate.dialect.MariaDB106Dialect
+    hibernate:
+      # ddl
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true # SQL log
+        use_sql_comments: true
+        type: trace
+    database: mysql
+
+# log level setting
+logging:
+  level:
+    root: info
+    com:
+      fish:
+        shareplan: debug
+    org:
+      hibernate:
+        SQL: info
+
+#  custom setting - file
+#  사용자가 올린 파일의 저장 경로
+file:
+  upload:
+    location: ${user.home}/fish/uploads/
+
+
