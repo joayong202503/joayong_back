@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.category.entity;
 
+import com.joayong.skillswap.domain.post.entity.PostItem;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,12 @@ public class CategoryTalent {
 
     @Column(nullable = false, length = 255)
     private String name;
+
+    @OneToOne(mappedBy = "talentGId")
+    private PostItem postItemGId;
+
+    @OneToOne(mappedBy = "talentTId")
+    private PostItem postItemTId;
 
     public CategoryTalent() {
         this.id = UUID.randomUUID().toString();

@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.category.entity;
 
+import com.joayong.skillswap.domain.post.entity.PostItem;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "category_region_tb")
-public class RegionCategory {
+public class CategoryRegion {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private String id;
@@ -21,32 +22,35 @@ public class RegionCategory {
     // 부모 카테고리 (Self-Join)
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private RegionCategory parent;
+    private CategoryRegion parent;
 
     // 자식 카테고리 리스트 (양방향 매핑)
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RegionCategory> children = new ArrayList<>();
+    private List<CategoryRegion> children = new ArrayList<>();
 
     @Column(nullable = false, length = 255)
     private String name;
 
-    public RegionCategory() {
+    @OneToOne(mappedBy = "regionId")
+    private PostItem postItem;
+
+    public CategoryRegion() {
         this.id = UUID.randomUUID().toString();
     }
 
     // 자식 카테고리 추가 메서드
-    public void addChild(RegionCategory child) {
+    public void addChild(CategoryRegion child) {
         children.add(child);
         child.setParent(this);
     }
 
     // 자식 카테고리 삭제 메서드
-    public void removeChild(RegionCategory child) {
+    public void removeChild(CategoryRegion child) {
         children.remove(child);
         child.setParent(null);
     }
 
-    private void setParent(RegionCategory parent) {
+    private void setParent(CategoryRegion parent) {
         this.parent = parent;
     }
 }

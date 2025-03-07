@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-@ToString(exclude = {"user","categoryTs"})
+@ToString(exclude = {"user","category"})
 @Builder
 @Entity
 @Table(name = "talent_tb")
@@ -30,7 +30,7 @@ public class Talent {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "value_id", nullable = false)
-    private CategoryTalent categoryTs;
+    private CategoryTalent category;
 
     public Talent(){
         this.id  = UUID.randomUUID().toString();

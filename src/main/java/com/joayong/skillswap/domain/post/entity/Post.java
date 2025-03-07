@@ -29,14 +29,14 @@ public class Post {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    @Column(name = "view_count")
+    @Column(name = "view_count", nullable = false)
     private Integer viewCount;
 
     @Enumerated(EnumType.STRING)

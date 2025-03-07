@@ -17,10 +17,10 @@ public class RatingDetail {
     @JoinColumn(name = "rating_id", nullable = false)
     private Rating rating;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "value")
+    @Column(name = "value", nullable = false)
     private int ratingValue;
 
     public RatingDetail() {

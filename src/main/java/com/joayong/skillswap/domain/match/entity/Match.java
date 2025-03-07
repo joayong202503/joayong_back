@@ -29,7 +29,7 @@ public class Match {
     @JoinColumn(name = "client_id", nullable = false)
     private User client;
 
-    @Column(name = "matched_at")
+    @Column(name = "matched_at", nullable = false)
     @CreationTimestamp
     private LocalDateTime matchedAt;
 

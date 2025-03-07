@@ -1,5 +1,7 @@
 package com.joayong.skillswap.domain.post.entity;
 
+import com.joayong.skillswap.domain.category.entity.CategoryRegion;
+import com.joayong.skillswap.domain.category.entity.CategoryTalent;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,14 +24,20 @@ public class PostItem {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "talent_g", length = 255)
-    private String talentG;
+    @OneToOne
+    @JoinColumn(name = "talent_g_id", referencedColumnName = "id", nullable = false)
+    private CategoryTalent talentGId;
 
-    @Column(name = "talent_t", length = 255)
-    private String talentT;
+    @OneToOne
+    @JoinColumn(name = "talent_t_id", referencedColumnName = "id", nullable = false)
+    private CategoryTalent talentTId;
+
+    @OneToOne
+    @JoinColumn(name = "region_id", referencedColumnName = "id", nullable = false)
+    private CategoryRegion regionId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)

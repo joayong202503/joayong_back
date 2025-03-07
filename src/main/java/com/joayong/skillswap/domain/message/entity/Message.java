@@ -30,11 +30,11 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "msg_status", columnDefinition = "VARCHAR(10)")
+    @Column(name = "msg_status", nullable = false, columnDefinition = "VARCHAR(10)")
     private PostStatus msgStatus;
 
     @Column(name = "sent_at", nullable = false, updatable = false)
