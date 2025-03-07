@@ -1,6 +1,6 @@
 package com.joayong.skillswap.domain.talent.entity;
 
-import com.joayong.skillswap.domain.category.entity.CategoryTs;
+import com.joayong.skillswap.domain.category.entity.CategoryTalent;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.TalentType;
 import jakarta.persistence.Entity;
@@ -31,5 +31,5 @@ public class Talent {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "value_id", nullable = false)
-    private CategoryTs categoryTs;
+    private CategoryTalent categoryTs;
 }
