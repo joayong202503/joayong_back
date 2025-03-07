@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "writer")
 @Builder
@@ -20,7 +19,7 @@ import java.util.UUID;
 public class Post {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private final String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer", nullable = false)
@@ -35,12 +34,18 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt = null;
+    private LocalDateTime deletedAt;
 
-    @Column(name = "view_count", columnDefinition = "INT DEFAULT 0")
-    private Integer viewCount = 0;
+    @Column(name = "view_count")
+    private Integer viewCount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostStatus status = PostStatus.C;
+    private PostStatus status;
+
+    public Post() {
+        this.id = UUID.randomUUID().toString();
+        this.status=PostStatus.N;
+        this.viewCount = 0;
+    }
 }

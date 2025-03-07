@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"parent","children"})
 @Builder
@@ -17,7 +16,7 @@ import java.util.UUID;
 public class RegionCategory {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private String id;
 
     // 부모 카테고리 (Self-Join)
     @ManyToOne
@@ -30,4 +29,24 @@ public class RegionCategory {
 
     @Column(nullable = false, length = 255)
     private String name;
+
+    public RegionCategory() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    // 자식 카테고리 추가 메서드
+    public void addChild(RegionCategory child) {
+        children.add(child);
+        child.setParent(this);
+    }
+
+    // 자식 카테고리 삭제 메서드
+    public void removeChild(RegionCategory child) {
+        children.remove(child);
+        child.setParent(null);
+    }
+
+    private void setParent(RegionCategory parent) {
+        this.parent = parent;
+    }
 }

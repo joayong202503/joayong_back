@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.user.entity;
 
+import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.talent.entity.Talent;
 import com.joayong.skillswap.enums.Role;
 import jakarta.persistence.*;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "talents")
 @Builder
@@ -23,7 +23,7 @@ import java.util.UUID;
 public class User {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private String id;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
@@ -43,16 +43,21 @@ public class User {
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_at")
-    private LocalDateTime deletedAt = null;
+    private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Role role = Role.COMMON;
+    private Role role;
 
     @Column(name = "profile_url", length = 500)
     private String profileUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
+
+    public User(){
+        this.id = UUID.randomUUID().toString();
+        this.role = Role.COMMON;
+    }
 }
 

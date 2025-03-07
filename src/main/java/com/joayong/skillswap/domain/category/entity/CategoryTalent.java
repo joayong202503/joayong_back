@@ -8,16 +8,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"parent","children"})
+@ToString(exclude = {"parent", "children"})
 @Builder
 @Entity
 @Table(name = "category_talent_tb")
 public class CategoryTalent {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private final String id;
 
     // 부모 카테고리 (Self-Join)
     @ManyToOne
@@ -30,4 +29,24 @@ public class CategoryTalent {
 
     @Column(nullable = false, length = 255)
     private String name;
+
+    public CategoryTalent() {
+        this.id = UUID.randomUUID().toString();
+    }
+
+    // 자식 카테고리 추가 메서드
+    public void addChild(CategoryTalent child) {
+        children.add(child);
+        child.setParent(this);
+    }
+
+    // 자식 카테고리 삭제 메서드
+    public void removeChild(CategoryTalent child) {
+        children.remove(child);
+        child.setParent(null);
+    }
+
+    private void setParent(CategoryTalent parent) {
+        this.parent = parent;
+    }
 }

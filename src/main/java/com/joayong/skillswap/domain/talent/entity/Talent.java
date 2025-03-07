@@ -10,7 +10,6 @@ import lombok.*;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"user","categoryTs"})
 @Builder
@@ -19,7 +18,7 @@ import java.util.UUID;
 public class Talent {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -32,4 +31,8 @@ public class Talent {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "value_id", nullable = false)
     private CategoryTalent categoryTs;
+
+    public Talent(){
+        this.id  = UUID.randomUUID().toString();
+    }
 }

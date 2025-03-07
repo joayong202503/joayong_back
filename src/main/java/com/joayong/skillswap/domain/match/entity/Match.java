@@ -7,19 +7,19 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"post","client"})
+@ToString(exclude = {"post", "client"})
 @Builder
 @Entity
 @Table(name = "match_tb")
 public class Match {
     @Id
-    @Column(name = "id", columnDefinition = "CHAR(36) DEFAULT UUID()")
-    private final String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "CHAR(36)")
+    private final String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -32,4 +32,8 @@ public class Match {
     @Column(name = "matched_at")
     @CreationTimestamp
     private LocalDateTime matchedAt;
+
+    public Match() {
+        this.id = UUID.randomUUID().toString();
+    }
 }

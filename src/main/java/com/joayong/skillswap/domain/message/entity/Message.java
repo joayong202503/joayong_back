@@ -12,7 +12,6 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "post")
 @Builder
@@ -21,7 +20,7 @@ import java.util.UUID;
 public class Message {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private final String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -35,11 +34,16 @@ public class Message {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "msg_status")
-    private PostStatus msgStatus = PostStatus.N;
+    @Column(name = "msg_status", columnDefinition = "VARCHAR(10)")
+    private PostStatus msgStatus;
 
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime sentAt;;
+    private LocalDateTime sentAt;
+
+    public Message(){
+        this.id  = UUID.randomUUID().toString();
+        this.msgStatus = PostStatus.N;
+    }
 
 }

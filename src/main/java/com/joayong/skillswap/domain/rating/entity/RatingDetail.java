@@ -3,18 +3,15 @@ package com.joayong.skillswap.domain.rating.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "rating_detail_tb")
 public class RatingDetail {
     @Id
-    @Column(name = "id", columnDefinition = "CHAR(36) DEFAULT UUID()")
-    private final String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "CHAR(36)")
+    private final String id;
 
     @ManyToOne
     @JoinColumn(name = "rating_id", nullable = false)
@@ -25,4 +22,8 @@ public class RatingDetail {
 
     @Column(name = "value")
     private int ratingValue;
+
+    public RatingDetail() {
+        this.id = UUID.randomUUID().toString();
+    }
 }

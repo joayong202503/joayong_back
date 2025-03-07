@@ -8,7 +8,6 @@ import java.util.UUID;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString(exclude = "post")
@@ -18,7 +17,7 @@ import lombok.*;
 public class PostItem {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private final String id;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -35,4 +34,8 @@ public class PostItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    public PostItem() {
+        this.id = UUID.randomUUID().toString();
+    }
 }

@@ -8,7 +8,6 @@ import java.util.UUID;
 
 
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "user")
 @Builder
@@ -16,13 +15,18 @@ import java.util.UUID;
 @Table(name = "rating_tb")
 public class Rating {
     @Id
-    @Column(name = "id", columnDefinition = "CHAR(36) DEFAULT UUID()")
-    private final String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "CHAR(36)")
+    private final String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "total_rating")
-    private double totalRating = 0.0;
+    @Column(name = "total_rating", columnDefinition = "DOUBLE")
+    private double totalRating;
+
+    public Rating(){
+        this.id  = UUID.randomUUID().toString();
+        this.totalRating = 0.0;
+    }
 }
