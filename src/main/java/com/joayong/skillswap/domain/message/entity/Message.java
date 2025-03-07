@@ -2,6 +2,7 @@ package com.joayong.skillswap.domain.message.entity;
 
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -32,6 +33,10 @@ public class Message {
 
     @Column(name = "content")
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "msg_status")
+    private PostStatus msgStatus = PostStatus.N;
 
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreationTimestamp
