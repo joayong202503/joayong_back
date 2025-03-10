@@ -20,6 +20,9 @@ public class PostImageUrl {
     @Column(name = "id", columnDefinition = "CHAR(36)")
     private final String id;
 
+    @Column(name = "sequence")
+    private int sequence;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_item_id")
     private PostItem postItem;

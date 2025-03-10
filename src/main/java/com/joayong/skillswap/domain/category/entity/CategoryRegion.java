@@ -27,6 +27,7 @@ public class CategoryRegion {
     private CategoryRegion parent;
 
     // 자식 카테고리 리스트 (양방향 매핑)
+    @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategoryRegion> children = new ArrayList<>();
 
