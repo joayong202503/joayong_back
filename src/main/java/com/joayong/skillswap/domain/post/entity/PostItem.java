@@ -2,12 +2,13 @@ package com.joayong.skillswap.domain.post.entity;
 
 import com.joayong.skillswap.domain.category.entity.CategoryRegion;
 import com.joayong.skillswap.domain.category.entity.CategoryTalent;
+import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-
-import lombok.*;
 
 @Getter
 @AllArgsConstructor
@@ -42,6 +43,10 @@ public class PostItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    @OneToMany(mappedBy = "postItem",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @Builder.Default
+    private List<PostImageUrl> postImages = new ArrayList<>();
 
     public PostItem() {
         this.id = UUID.randomUUID().toString();

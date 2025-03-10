@@ -1,5 +1,7 @@
 package com.joayong.skillswap.domain.message.entity;
 
+import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
+import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.PostStatus;
@@ -8,6 +10,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -40,6 +44,10 @@ public class Message {
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime sentAt;
+
+    @OneToMany(mappedBy = "message",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @Builder.Default
+    private List<MessageImageUrl> messageImages = new ArrayList<>();
 
     public Message(){
         this.id  = UUID.randomUUID().toString();
