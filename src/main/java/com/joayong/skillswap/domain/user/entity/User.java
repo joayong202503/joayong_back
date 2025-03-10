@@ -19,6 +19,7 @@ import java.util.UUID;
 @ToString(exclude = "talents")
 @Builder
 @Entity
+@Setter
 @Table(name = "user_tb")
 public class User {
     @Id

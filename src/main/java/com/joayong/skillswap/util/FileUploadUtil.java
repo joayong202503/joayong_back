@@ -1,6 +1,8 @@
 package com.joayong.skillswap.util;
 
 import com.joayong.skillswap.config.FileUploadConfig;
+import com.joayong.skillswap.exception.ErrorCode;
+import com.joayong.skillswap.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

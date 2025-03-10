@@ -1,6 +1,6 @@
 package com.joayong.skillswap.config;
 
-import com.example.instagramclone.jwt.JwtAuthenticationFilter;
+import com.joayong.skillswap.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
