@@ -27,6 +27,7 @@ public class CategoryTalent {
     private CategoryTalent parent;
 
     // 자식 카테고리 리스트 (양방향 매핑)
+    @Builder.Default
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CategoryTalent> children = new ArrayList<>();
 

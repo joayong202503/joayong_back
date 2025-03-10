@@ -18,7 +18,10 @@ public class MessageImageUrl {
 
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id;
+
+    @Column(name = "sequence")
+    private int sequence;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_item_id")
