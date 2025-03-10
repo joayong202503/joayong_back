@@ -11,6 +11,9 @@ import java.util.List;
 @ToString
 @Builder
 public class MainTalentDto {
+
+    private Long id;
+
     private String name;
 
     private List<SubTalentDto> subTalentList;
