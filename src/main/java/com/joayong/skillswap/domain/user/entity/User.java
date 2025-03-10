@@ -25,9 +25,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "user_tb")
 public class User {
+
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id;
+    private String id= UUID.randomUUID().toString();;
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;
@@ -49,9 +51,10 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
-    private Role role;
+    private Role role = Role.COMMON;
 
     @Column(name = "profile_url", length = 500)
     private String profileUrl;
@@ -75,10 +78,5 @@ public class User {
     @Builder.Default
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Match> matchList = new ArrayList<>();
-
-    public User(){
-        this.id = UUID.randomUUID().toString();
-        this.role = Role.COMMON;
-    }
 }
 
