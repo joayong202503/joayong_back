@@ -17,14 +17,16 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = "post")
 @Builder
 @Entity
 @Table(name = "message_tb")
 public class Message {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id= UUID.randomUUID().toString();;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -37,9 +39,10 @@ public class Message {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "msg_status", nullable = false, columnDefinition = "VARCHAR(10)")
-    private PostStatus msgStatus;
+    private PostStatus msgStatus = PostStatus.N;
 
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreationTimestamp
@@ -48,10 +51,5 @@ public class Message {
     @OneToMany(mappedBy = "message",cascade = CascadeType.REMOVE,orphanRemoval = true)
     @Builder.Default
     private List<MessageImageUrl> messageImages = new ArrayList<>();
-
-    public Message(){
-        this.id  = UUID.randomUUID().toString();
-        this.msgStatus = PostStatus.N;
-    }
 
 }

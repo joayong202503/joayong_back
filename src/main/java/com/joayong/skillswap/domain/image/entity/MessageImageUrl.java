@@ -9,6 +9,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Builder
@@ -16,9 +17,10 @@ import java.util.UUID;
 @Table(name = "message_image_url_tb")
 public class MessageImageUrl {
 
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id;
+    private String id= UUID.randomUUID().toString();;
 
     @Column(name = "sequence")
     private int sequence;
@@ -30,7 +32,4 @@ public class MessageImageUrl {
     @Column(name = "image_url", nullable = false, length = 255)
     private String imageUrl;
 
-    public MessageImageUrl(){
-        this.id  = UUID.randomUUID().toString();
-    }
 }

@@ -10,15 +10,17 @@ import java.util.UUID;
 
 @Getter @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Builder
 @Entity
 @Table(name = "post_image_url_tb")
 public class PostImageUrl {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id= UUID.randomUUID().toString();;
 
     @Column(name = "sequence")
     private int sequence;
@@ -30,7 +32,4 @@ public class PostImageUrl {
     @Column(name = "image_url", nullable = false, length = 255)
     private String imageUrl;
 
-    public PostImageUrl(){
-        this.id  = UUID.randomUUID().toString();
-    }
 }
