@@ -14,15 +14,17 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Builder
 @Entity
 @Table(name = "rating_detail_tb")
 public class RatingDetail {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id;
+    private String id= UUID.randomUUID().toString();;
 
     @ManyToOne
     @JoinColumn(name = "rating_id", nullable = false)
@@ -43,7 +45,4 @@ public class RatingDetail {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public RatingDetail() {
-        this.id = UUID.randomUUID().toString();
-    }
 }

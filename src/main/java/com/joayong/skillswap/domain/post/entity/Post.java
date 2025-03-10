@@ -17,14 +17,16 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = "writer")
 @Builder
 @Entity
 @Table(name = "post_tb")
 public class Post {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id= UUID.randomUUID().toString();;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer", nullable = false)
@@ -41,12 +43,14 @@ public class Post {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Builder.Default
     @Column(name = "view_count", nullable = false)
-    private Integer viewCount;
+    private Integer viewCount = 0;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostStatus status;
+    private PostStatus status =PostStatus.N;
 
     @Builder.Default
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
@@ -60,9 +64,4 @@ public class Post {
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Match> matchList = new ArrayList<>();
 
-    public Post() {
-        this.id = UUID.randomUUID().toString();
-        this.status=PostStatus.N;
-        this.viewCount = 0;
-    }
 }

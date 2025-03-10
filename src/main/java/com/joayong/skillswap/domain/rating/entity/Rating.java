@@ -14,17 +14,20 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = {"user", "ratingDetails"})
 @Builder
 @Entity
 @Table(name = "rating_tb")
 public class Rating {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id= UUID.randomUUID().toString();;
 
+    @Builder.Default
     @Column(name = "total_rating", columnDefinition = "DOUBLE")
-    private double totalRating;
+    private double totalRating = 0.0;
 
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
@@ -37,8 +40,4 @@ public class Rating {
     @OneToOne(mappedBy = "rating", cascade = CascadeType.ALL, orphanRemoval = true)
     private User user;
 
-    public Rating() {
-        this.id = UUID.randomUUID().toString();
-        this.totalRating = 0.0;
-    }
 }

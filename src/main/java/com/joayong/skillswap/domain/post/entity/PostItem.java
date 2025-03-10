@@ -12,15 +12,17 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode
 @ToString(exclude = "post")
 @Builder
 @Entity
 @Table(name = "post_item_tb")
 public class PostItem {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id= UUID.randomUUID().toString();;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -47,8 +49,4 @@ public class PostItem {
     @Builder.Default
     @OneToMany(mappedBy = "postItem",cascade = CascadeType.REMOVE,orphanRemoval = true)
     private List<PostImageUrl> postImages = new ArrayList<>();
-
-    public PostItem() {
-        this.id = UUID.randomUUID().toString();
-    }
 }

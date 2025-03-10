@@ -12,14 +12,16 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = {"post", "client"})
 @Builder
 @Entity
 @Table(name = "match_tb")
 public class Match {
+    @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private final String id;
+    private String id= UUID.randomUUID().toString();;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -33,7 +35,4 @@ public class Match {
     @CreationTimestamp
     private LocalDateTime matchedAt;
 
-    public Match() {
-        this.id = UUID.randomUUID().toString();
-    }
 }
