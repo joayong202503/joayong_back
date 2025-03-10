@@ -3,6 +3,7 @@ package com.joayong.skillswap.serivice;
 import com.joayong.skillswap.domain.user.dto.request.LoginRequest;
 import com.joayong.skillswap.domain.user.dto.request.SignUpRequest;
 import com.joayong.skillswap.domain.user.dto.response.DuplicateCheckResponse;
+import com.joayong.skillswap.domain.user.dto.response.UserProfileResponse;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.UserException;
@@ -79,7 +80,7 @@ public class UserService {
         String email = loginRequest.getEmail();
 
         User foundMember = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         // 사용자가 입력한 패스워드와 DB에 저장된 패스워드를 추출
         String inputPassword = loginRequest.getPassword();
@@ -98,5 +99,16 @@ public class UserService {
                 "accessToken", jwtTokenProvider.createAccessToken(foundMember.getEmail())
 //                ,"profileImage", foundMember.getProfileImageUrl()
         );
+    }
+
+    public User findMe(String email) {
+        User founduser = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserException((ErrorCode.USER_NOT_FOUND))
+                );
+        return founduser;
+    }
+
+    public UserProfileResponse findUserProfile(String id) {
+        return userRepository.getUserProfile(id);
     }
 }
