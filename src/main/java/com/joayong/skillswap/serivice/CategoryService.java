@@ -1,10 +1,7 @@
 package com.joayong.skillswap.serivice;
 
 
-import com.joayong.skillswap.domain.category.dto.response.CategoryResponse;
-import com.joayong.skillswap.domain.category.dto.response.MainRegionDto;
-import com.joayong.skillswap.domain.category.dto.response.MainTalentDto;
-import com.joayong.skillswap.domain.category.dto.response.SubTalentDto;
+import com.joayong.skillswap.domain.category.dto.response.*;
 import com.joayong.skillswap.domain.category.entity.CategoryTalent;
 import com.joayong.skillswap.domain.category.entity.QCategoryTalent;
 import com.joayong.skillswap.repository.CategoryRegionRepository;
@@ -34,9 +31,11 @@ public class CategoryService {
     public CategoryResponse getCategories() {
 
         List<MainTalentDto> talentCategoryList = getTalentCategoryList();
+        List<MainRegionDto> regionCategoryList = getregionCategoryList();
 
         return CategoryResponse.builder()
                 .mainTalentList(talentCategoryList)
+                .mainRegionList(regionCategoryList)
                 .build();
     }
 
@@ -71,5 +70,55 @@ public class CategoryService {
         log.info("mainTalentMap : {} ", mainTalentMap);
 
         return mainTalentMap.values().stream().toList();
+    }
+
+    private List<MainRegionDto> getregionCategoryList() {
+        List<Tuple> regionTupleList = regionRepository.getRegionCategory();
+
+        log.info("regionTupleList : {} ", regionTupleList);
+
+        Map<Long, MainRegionDto> mainRegionMap = new HashMap<>();
+        Map<Long, SubRegionDto> subRegionMap = new HashMap<>();
+
+        regionTupleList.forEach(tuple -> {
+            Long mainRegionId = tuple.get(0, Long.class);
+            String mainRegionName = tuple.get(1, String.class);
+            Long subRegionId = tuple.get(2, Long.class);
+            String subRegionName = tuple.get(3, String.class);
+            Long detailRegionId = tuple.get(4, Long.class);
+            String detailRegionName = tuple.get(5, String.class);
+
+            // 1레벨
+            MainRegionDto mainRegionDto = mainRegionMap.get(mainRegionId);
+
+            if (mainRegionDto == null) {
+                mainRegionDto = MainRegionDto.builder()
+                        .id(mainRegionId)
+                        .name(mainRegionName)
+                        .build();
+                mainRegionMap.put(mainRegionId, mainRegionDto);
+            }
+
+            // 2레벨
+            SubRegionDto subRegionDto = subRegionMap.get(subRegionId);
+            if(subRegionDto == null){
+                subRegionDto = SubRegionDto.builder()
+                        .id(subRegionId)
+                        .name(subRegionName)
+                        .build();
+                subRegionMap.put(subRegionId,subRegionDto);
+                mainRegionDto.getSubRegionList().add(subRegionDto);
+            }
+
+            // 3레벨
+            DetailRegionDto detailRegionDto = DetailRegionDto.builder()
+                    .id(detailRegionId)
+                    .name(detailRegionName)
+                    .build();
+            subRegionDto.getDetailRegionList().add(detailRegionDto);
+        });
+        log.info("mainRegionMap : {} ", mainRegionMap);
+
+        return mainRegionMap.values().stream().toList();
     }
 }

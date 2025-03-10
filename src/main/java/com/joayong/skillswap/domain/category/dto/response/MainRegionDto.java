@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.category.dto.response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.*;
@@ -15,5 +16,6 @@ public class MainRegionDto {
 
     private String name;
 
-    private List<SubRegionDto> subRegionList;
+    @Builder.Default
+    private List<SubRegionDto> subRegionList = new ArrayList<>();
 }
