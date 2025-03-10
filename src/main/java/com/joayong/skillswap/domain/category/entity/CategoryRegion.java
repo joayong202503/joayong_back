@@ -10,14 +10,16 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = {"parent","children"})
 @Builder
 @Entity
 @Table(name = "category_region_tb")
 public class CategoryRegion {
     @Id
-    @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id",updatable = false, nullable = false)
+    private Long id;
 
     // 부모 카테고리 (Self-Join)
     @ManyToOne
@@ -33,10 +35,6 @@ public class CategoryRegion {
 
     @OneToOne(mappedBy = "regionId")
     private PostItem postItem;
-
-    public CategoryRegion() {
-        this.id = UUID.randomUUID().toString();
-    }
 
     // 자식 카테고리 추가 메서드
     public void addChild(CategoryRegion child) {
