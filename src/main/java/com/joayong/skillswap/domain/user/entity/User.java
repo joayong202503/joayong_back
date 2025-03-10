@@ -28,7 +28,7 @@ import java.util.UUID;
 public class User {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id;
+    private String id = UUID.randomUUID().toString();
 
     @Column(nullable = false, unique = true, length = 255)
     private String email;

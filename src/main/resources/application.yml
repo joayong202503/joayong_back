@@ -49,8 +49,8 @@ logging:
   level:
     root: info
     com:
-      fish:
-        shareplan: debug
+      joayong:
+        skillswap: debug
     org:
       hibernate:
         SQL: info
