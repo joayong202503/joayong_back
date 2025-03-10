@@ -1,5 +1,8 @@
 package com.joayong.skillswap.domain.post.entity;
 
+import com.joayong.skillswap.domain.image.entity.PostImageUrl;
+import com.joayong.skillswap.domain.match.entity.Match;
+import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -8,6 +11,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -42,6 +47,18 @@ public class Post {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PostStatus status;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<PostItem> postItemList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private List<Message> messageList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Match> matchList = new ArrayList<>();
 
     public Post() {
         this.id = UUID.randomUUID().toString();

@@ -44,8 +44,8 @@ public class PostItem {
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
-    @OneToMany(mappedBy = "postItem",cascade = CascadeType.REMOVE,orphanRemoval = true)
     @Builder.Default
+    @OneToMany(mappedBy = "postItem",cascade = CascadeType.REMOVE,orphanRemoval = true)
     private List<PostImageUrl> postImages = new ArrayList<>();
 
     public PostItem() {

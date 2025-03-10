@@ -1,6 +1,10 @@
 package com.joayong.skillswap.domain.user.entity;
 
+import com.joayong.skillswap.domain.image.entity.PostImageUrl;
+import com.joayong.skillswap.domain.match.entity.Match;
+import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
+import com.joayong.skillswap.domain.rating.entity.Rating;
 import com.joayong.skillswap.domain.talent.entity.Talent;
 import com.joayong.skillswap.enums.Role;
 import jakarta.persistence.*;
@@ -16,7 +20,7 @@ import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
-@ToString(exclude = "talents")
+@ToString(exclude = {"talents","postList","rating"})
 @Builder
 @Entity
 @Table(name = "user_tb")
@@ -52,8 +56,25 @@ public class User {
     @Column(name = "profile_url", length = 500)
     private String profileUrl;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "sender",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private List<Message> messageList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "writer",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Post> postList = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JoinColumn(name = "rating_id")
+    private Rating rating;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Match> matchList = new ArrayList<>();
 
     public User(){
         this.id = UUID.randomUUID().toString();
