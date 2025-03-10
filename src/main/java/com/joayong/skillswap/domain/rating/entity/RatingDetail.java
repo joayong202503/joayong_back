@@ -3,26 +3,47 @@ package com.joayong.skillswap.domain.rating.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+@Getter @Setter
+@AllArgsConstructor
+@EqualsAndHashCode
+@ToString
+@Builder
 @Entity
 @Table(name = "rating_detail_tb")
 public class RatingDetail {
     @Id
-    @Column(name = "id", columnDefinition = "CHAR(36) DEFAULT UUID()")
-    private final String id = UUID.randomUUID().toString();
+    @Column(name = "id", columnDefinition = "CHAR(36)")
+    private String id;
 
     @ManyToOne
     @JoinColumn(name = "rating_id", nullable = false)
     private Rating rating;
 
-    @Column(name = "content")
-    private String content;
+    @Builder.Default
+    @OneToMany(mappedBy = "ratingDetail", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<ReviewItem> reviewItems = new ArrayList<>();
 
-    @Column(name = "value")
+    @Column(name = "value", nullable = false)
     private int ratingValue;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    public RatingDetail() {
+        this.id = UUID.randomUUID().toString();
+    }
 }

@@ -1,17 +1,21 @@
 package com.joayong.skillswap.domain.message.entity;
 
+import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
+import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = "post")
 @Builder
@@ -20,7 +24,7 @@ import java.util.UUID;
 public class Message {
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id = UUID.randomUUID().toString();
+    private final String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
@@ -30,11 +34,24 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
-    @Column(name = "content")
+    @Column(name = "content", nullable = false)
     private String content;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "msg_status", nullable = false, columnDefinition = "VARCHAR(10)")
+    private PostStatus msgStatus;
 
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime sentAt;;
+    private LocalDateTime sentAt;
+
+    @OneToMany(mappedBy = "message",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @Builder.Default
+    private List<MessageImageUrl> messageImages = new ArrayList<>();
+
+    public Message(){
+        this.id  = UUID.randomUUID().toString();
+        this.msgStatus = PostStatus.N;
+    }
 
 }
