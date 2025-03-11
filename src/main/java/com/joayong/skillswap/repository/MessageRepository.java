@@ -18,4 +18,6 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     List<Message> findBySenderIdAndMsgStatus(String senderId, PostStatus postStatus);
 
+    List<Message> findByPostWriter(User writer);
+
 }
