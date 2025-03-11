@@ -2,9 +2,11 @@ package com.joayong.skillswap.serivice;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.message.entity.Message;
+import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.repository.MessageImageUrlRepository;
 import com.joayong.skillswap.repository.MessageRepository;
+import com.joayong.skillswap.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ class MessageServiceTest {
     MessageRepository messageRepository;
     @Autowired
     MessageImageUrlRepository imageUrlRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Test
     @DisplayName("메세지를 옵션에 따라 조회가능하다")
@@ -42,4 +46,23 @@ class MessageServiceTest {
             System.out.println("imageUrlList = " + imageUrlList);
         }));
     }
+
+    @Test
+    @DisplayName("\"p@pcom\"가 보낸 메세지를 조회한다")
+    void findBySenderTest() {
+        //given
+        User sender = userRepository.findByEmail("p@p.com").orElseThrow();
+
+        //when
+        List<Message> list = messageRepository.findBySender(sender);
+
+        //then
+        System.out.println("list = " + list);
+
+        list.forEach((message -> {
+            List<MessageImageUrl> imageUrlList = imageUrlRepository.findByMessage(message);
+            System.out.println("imageUrlList = " + imageUrlList);
+        }));
+    }
+    
 }
