@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
-@ToString(exclude = "writer")
+@ToString(exclude = {"writer","postItemList","messageList","matchList"})
 @Builder
 @Entity
 @Table(name = "post_tb")

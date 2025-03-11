@@ -11,7 +11,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"parent","children"})
+@ToString(exclude = {"parent","children","postItem"})
 @Builder
 @Entity
 @Table(name = "category_region_tb")

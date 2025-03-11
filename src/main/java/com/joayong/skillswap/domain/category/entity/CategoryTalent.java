@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.category.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.joayong.skillswap.domain.post.entity.PostItem;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"parent", "children"})
+@ToString(exclude = {"parent", "children","postItemGId","postItemTId"})
 @Builder
 @Entity
 @Table(name = "category_talent_tb")
@@ -22,6 +23,7 @@ public class CategoryTalent {
     private Long id;
 
     // 부모 카테고리 (Self-Join)
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private CategoryTalent parent;
@@ -34,9 +36,11 @@ public class CategoryTalent {
     @Column(nullable = false, length = 255)
     private String name;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "talentGId")
     private PostItem postItemGId;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "talentTId")
     private PostItem postItemTId;
 
