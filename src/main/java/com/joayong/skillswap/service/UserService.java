@@ -1,4 +1,4 @@
-package com.joayong.skillswap.serivice;
+package com.joayong.skillswap.service;
 
 import com.joayong.skillswap.domain.user.dto.request.LoginRequest;
 import com.joayong.skillswap.domain.user.dto.request.SignUpRequest;

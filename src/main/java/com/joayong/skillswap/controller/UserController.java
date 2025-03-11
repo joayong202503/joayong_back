@@ -4,7 +4,7 @@ import com.joayong.skillswap.domain.user.dto.response.UserProfileResponse;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.UserException;
-import com.joayong.skillswap.serivice.UserService;
+import com.joayong.skillswap.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
