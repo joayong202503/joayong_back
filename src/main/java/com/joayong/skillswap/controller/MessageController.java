@@ -1,6 +1,6 @@
 package com.joayong.skillswap.controller;
 
-import com.joayong.skillswap.domain.message.dto.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.serivice.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

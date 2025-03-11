@@ -1,7 +1,7 @@
 package com.joayong.skillswap.serivice;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
-import com.joayong.skillswap.domain.message.dto.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
@@ -34,6 +34,8 @@ public class MessageService {
 
     private final FileUploadUtil fileUploadUtil;
 
+
+    // 메세지 전송 서비스
     public String sendMessage(String email, MessageRequest dto, List<MultipartFile> images) {
 
         Post post = postRepository.findById(dto.getPostId()).orElseThrow(
@@ -90,5 +92,10 @@ public class MessageService {
             }
         }
         return ImageUrlList;
+    }
+
+    // 메세지 조회 서비스
+    public List<?> findMessages(){
+
     }
 }

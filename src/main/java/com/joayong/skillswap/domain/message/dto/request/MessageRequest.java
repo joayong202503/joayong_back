@@ -1,9 +1,6 @@
-package com.joayong.skillswap.domain.message.dto;
+package com.joayong.skillswap.domain.message.dto.request;
 
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
