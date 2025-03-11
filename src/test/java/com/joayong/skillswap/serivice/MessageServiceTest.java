@@ -2,10 +2,12 @@ package com.joayong.skillswap.serivice;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.message.entity.Message;
+import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.repository.MessageImageUrlRepository;
 import com.joayong.skillswap.repository.MessageRepository;
+import com.joayong.skillswap.repository.PostRepository;
 import com.joayong.skillswap.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +33,8 @@ class MessageServiceTest {
     MessageImageUrlRepository imageUrlRepository;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PostRepository postRepository;
 
     @Test
     @DisplayName("메세지를 옵션에 따라 조회가능하다")
@@ -64,5 +70,25 @@ class MessageServiceTest {
             System.out.println("imageUrlList = " + imageUrlList);
         }));
     }
-    
+
+    @Test
+    @DisplayName("\"p@p.com\"가 받은 메세지를 조회한다")
+    void findByReceiverIdTest() {
+        //given
+        User receiver = userRepository.findByEmail("p@p.com").orElseThrow();
+
+        //when
+        List<Post> postList = postRepository.findByWriter(receiver);
+
+        Map<String,List<Message>> hashMap= new HashMap<>();
+
+        postList.forEach(post -> {
+            List<Message> messageList = messageRepository.findByPost(post);
+            hashMap.put(post.getId(),messageList);
+        });
+
+        //then
+
+        System.out.println("hashMap = " + hashMap);
+    }
 }
