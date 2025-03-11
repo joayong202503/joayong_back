@@ -28,22 +28,12 @@ public enum ErrorCode {
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다."),
 
-    // 방 관련 에러
-    NOT_FOUND_CODE(HttpStatus.NOT_FOUND, "조회되지 않는 코드입니다."),
-    INVALID_TYPE_NAME(HttpStatus.BAD_REQUEST, "잘못된 타입 이름입니다."),
-
     // 포스트관련 에러
     INVALID_START_END_TIME(HttpStatus.BAD_REQUEST, "시작 시간이 종료 시간보다 늦을 수 없습니다."),
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND,"조회되지않는 게시글입니다."),
 
-    // 일정관련
-    NOT_FOUND_SCHEDULE(HttpStatus.NOT_FOUND, "조회되지 않는 일정입니다."),
-
-    // 지출관련
-    NOT_FOUND_EXPENSE(HttpStatus.NOT_FOUND, "조회되지 않는 지출내역입니다."),
-
-    // 체크리스트 관련
-    NOT_FOUND_CHECKLIST(HttpStatus.NOT_FOUND, "조회되지 않는 체크리스트입니다."),
-    NOT_FOUND_CHECKLIST_CATEGORY(HttpStatus.NOT_FOUND, "조회되지 않는 체크리스트의 카테고리입니다."),
+    // 메세지 관련 에러
+    NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND,"조회되지않는 메세지입니다."),
 
     // 등록실패 오류
     FAIL_TO_RESISTER(HttpStatus.BAD_REQUEST,"등록에 실패했습니다."),
