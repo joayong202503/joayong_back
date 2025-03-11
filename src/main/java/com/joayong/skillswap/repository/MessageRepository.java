@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface MessageRepository extends JpaRepository<Message,String> {
-    public List<Message> findBySenderIdAndMsgStatus(String senderId, PostStatus msgStatus);
+public interface MessageRepository extends JpaRepository<Message, String> {
 
-    public List<Message> findBySender(User sender);
+    List<Message> findBySenderId(String senderId);
 
-    public List<Message> findByPost(Post post);
+    List<Message> findByPostId(String postId);
+
+    List<Message> findByPostIdAndMsgStatus(String postId, PostStatus msgStatus);
+
+    List<Message> findBySenderIdAndMsgStatus(String senderId, PostStatus postStatus);
+
 }

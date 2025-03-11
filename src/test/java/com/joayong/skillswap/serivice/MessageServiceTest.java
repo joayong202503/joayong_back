@@ -40,9 +40,10 @@ class MessageServiceTest {
     @DisplayName("메세지를 옵션에 따라 조회가능하다")
     void findBySenderIdAndMsgStatusTest() {
         //given
-
+        User sender = userRepository.findByEmail("p@p.com").orElseThrow();
         //when
-        List<Message> list = messageRepository.findBySenderIdAndMsgStatus("072c17ea-0a46-40df-b9e8-2aa41afb096e", PostStatus.N);
+//        List<Message> list = messageRepository.findBySenderIdAndMsgStatus("072c17ea-0a46-40df-b9e8-2aa41afb096e", PostStatus.N);
+        List<Message> list = messageRepository.findBySenderIdAndMsgStatus(sender.getId(), PostStatus.N);
 
         //then
         System.out.println("list = " + list);
@@ -60,7 +61,7 @@ class MessageServiceTest {
         User sender = userRepository.findByEmail("p@p.com").orElseThrow();
 
         //when
-        List<Message> list = messageRepository.findBySender(sender);
+        List<Message> list = messageRepository.findBySenderId(sender.getId());
 
         //then
         System.out.println("list = " + list);
@@ -83,7 +84,7 @@ class MessageServiceTest {
         Map<String,List<Message>> hashMap= new HashMap<>();
 
         postList.forEach(post -> {
-            List<Message> messageList = messageRepository.findByPost(post);
+            List<Message> messageList = messageRepository.findByPostId(post.getId());
             hashMap.put(post.getId(),messageList);
         });
 
