@@ -18,7 +18,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "post")
+@ToString(exclude = {"post", "messageImages","sender"})
 @Builder
 @Entity
 @Table(name = "message_tb")
@@ -26,7 +26,7 @@ public class Message {
     @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id= UUID.randomUUID().toString();;
+    private String id= UUID.randomUUID().toString();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
