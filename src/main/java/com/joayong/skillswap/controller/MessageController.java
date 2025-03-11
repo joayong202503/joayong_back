@@ -22,7 +22,7 @@ public class MessageController {
 
     @PostMapping
     public ResponseEntity<?> getCategoryList(
-            @RequestBody MessageRequest dto,
+            @RequestPart(value = "message", required = true) MessageRequest dto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal String email
     ) {
