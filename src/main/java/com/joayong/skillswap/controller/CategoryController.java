@@ -1,7 +1,7 @@
 package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.category.dto.response.CategoryResponse;
-import com.joayong.skillswap.serivice.CategoryService;
+import com.joayong.skillswap.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
