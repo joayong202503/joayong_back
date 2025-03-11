@@ -12,7 +12,7 @@ public interface MessageRepository extends JpaRepository<Message, String> {
 
     List<Message> findBySenderId(String senderId);
 
-    List<Message> findByPostId(String postId);
+    List<Message> findByPostWriter(User writer);
 
     List<Message> findByPostIdAndMsgStatus(String postId, PostStatus msgStatus);
 

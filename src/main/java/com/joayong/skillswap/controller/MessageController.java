@@ -1,6 +1,7 @@
 package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.serivice.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<?> getCategoryList(
+    public ResponseEntity<?> sendMessage(
             @RequestPart(value = "message", required = true) MessageRequest dto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal String email
@@ -29,8 +30,21 @@ public class MessageController {
 
         String messageId = messageService.sendMessage(email, dto, images);
         return ResponseEntity.ok().body(Map.of
-                ("message","메세지가 전송되었습니다.",
-                "messageId",messageId)
+                ("message", "메세지가 전송되었습니다.",
+                        "messageId", messageId)
         );
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getMessageList(
+            @RequestParam(name = "filter") String filter,
+            @RequestParam(name = "status") String status,
+            @AuthenticationPrincipal String email
+    ) {
+
+        List<MessageResponse> messageResponseList
+                = messageService.findMessages(email, filter, status);
+
+        return ResponseEntity.ok().body(messageResponseList);
     }
 }

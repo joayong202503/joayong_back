@@ -114,23 +114,47 @@ public class MessageService {
         switch (messageType) {
             // 보낸 메일 조회
             case RECEIVE: {
+                if (status == null) {
+                    messageList = messageRepository.findBySenderId(user.getId());
+                    break;
+                }
                 messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
+                break;
             }
             case SEND: {
-                // 게시글 조회 로직
-                messageList = messageRepository.findByPostWriterAndMsgStatus(user,postStatus);
+                if (status == null) {
+                    messageList = messageRepository.findByPostWriter(user);
+                    break;
+                }
+                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
+                break;
             }
             case ALL: {
-                List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
-                List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user,postStatus);
+                if (status == null) {
+                    List<Message> receiveMessageList = messageRepository.findBySenderId(user.getId());
+                    List<Message> sendMessageList = messageRepository.findByPostWriter(user);
 
+                    receiveMessageList.addAll(sendMessageList);
+
+                    messageList = receiveMessageList;
+                    break;
+                }
+                List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
+
+                log.info("receiveMessageList : {}",receiveMessageList);
+                List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
+
+                log.info("sendMessageList : {}",sendMessageList);
                 receiveMessageList.addAll(sendMessageList);
 
+                log.info(" add receiveMessageList:{}",receiveMessageList);
+
                 messageList = receiveMessageList;
+                break;
             }
         }
-
         // messageList 를 responseDto 로 변환
+        log.info("messageList:{}",messageList);
 
         return messageList.stream().map(MessageResponse::toDto).toList();
     }
