@@ -15,6 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 
@@ -49,6 +50,18 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    // 유저가 없을때
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFound(UserException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("message", "해당 사용자를 찾을 수 없습니다.", "error", e.getMessage()));
+    }
+    // 회원가입시 유저 중복이면
+    @ExceptionHandler(DuplicateUserException.class)
+    public ResponseEntity<Map<String,String>> handleDuplicateUser(DuplicateUserException e) {
+        return ResponseEntity.status((HttpStatus.CONFLICT))
+                .body(Map.of("message","이미 존재하는 회원입니다.","error",e.getMessage()));
+    }
     //커스텀 에러 처리
     //throw new MemberException(ErrorCode.TEST_ERROR,"10자 이하"); 로 던짐
 //    @ExceptionHandler(MemberException.class)

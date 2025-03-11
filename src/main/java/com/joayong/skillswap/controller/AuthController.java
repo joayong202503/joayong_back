@@ -43,9 +43,9 @@ public class AuthController {
     ) {
         log.info("check duplicate email: {}", email);
 
-        DuplicateCheckResponse responseDto = userService.checkDuplicate(email);
+        userService.checkDuplicate(email);
 
-        return ResponseEntity.ok().body(responseDto);
+        return ResponseEntity.ok().body(DuplicateCheckResponse.available());
     }
 
     // 로그인 검증 API

@@ -9,11 +9,13 @@ import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.jwt.JwtTokenProvider;
 import com.joayong.skillswap.repository.UserRepository;
+import com.joayong.skillswap.util.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -27,6 +29,8 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final UserRepository userRepository;
+
+    private final FileUploadUtil fileUploadUtil;
 
     // 회원가입 중간처리
     public void signUp(SignUpRequest signUpRequest) {
@@ -101,6 +105,7 @@ public class UserService {
         );
     }
 
+    // 내 정보 불러오기
     public User findMe(String email) {
         User founduser = userRepository.findByEmail(email)
                 .orElseThrow(()-> new UserException((ErrorCode.USER_NOT_FOUND))
@@ -108,7 +113,30 @@ public class UserService {
         return founduser;
     }
 
+    // 유저 정보 불러옿기
     public UserProfileResponse findUserProfile(String id) {
-        return userRepository.getUserProfile(id);
+        UserProfileResponse result = userRepository.getUserProfile(id);
+        log.info("result : "+result);
+        return result;
+    }
+
+    // 유저 이름 업데이트
+    public void updateName(String email, String newName){
+        if(newName==null|| newName.isEmpty()){
+            throw new RuntimeException("유저 이름은 빈 문자열일 수 없습니다!");
+        }
+        long updatedRows = userRepository.updateName(email,newName);
+        if(updatedRows!=1){
+            throw new RuntimeException("유저 이름 변경 실패! email : "+email);
+        }
+    }
+
+    // 프로필 이미지 업데이트
+    public String updateProfileImage(String email, MultipartFile profileImage) {
+        String uploadPath = fileUploadUtil.saveFile(profileImage);
+
+        userRepository.updateProfileImage(uploadPath,email);
+
+        return uploadPath;
     }
 }
