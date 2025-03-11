@@ -6,6 +6,7 @@ import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.MessageType;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -99,12 +101,37 @@ public class MessageService {
     }
 
     // 메세지 조회 서비스
-    public List<MessageResponse> findMessages(String email, String option) {
+    public List<MessageResponse> findMessages(String email, String filter, String status) {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.MEMBER_NOT_FOUND)
         );
 
+        MessageType messageType = MessageType.valueOf(filter);
+        PostStatus postStatus = PostStatus.valueOf(status);
 
-        return null;
+        List<Message> messageList = new ArrayList<>();
+
+        switch (messageType) {
+            // 보낸 메일 조회
+            case RECEIVE: {
+                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
+            }
+            case SEND: {
+                // 게시글 조회 로직
+                messageList = messageRepository.findByPostWriterAndMsgStatus(user,postStatus);
+            }
+            case ALL: {
+                List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
+                List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user,postStatus);
+
+                receiveMessageList.addAll(sendMessageList);
+
+                messageList = receiveMessageList;
+            }
+        }
+
+        // messageList 를 responseDto 로 변환
+
+        return messageList.stream().map(MessageResponse::toDto).toList();
     }
 }
