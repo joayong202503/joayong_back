@@ -63,7 +63,7 @@ public class UserController {
     @PutMapping("/update/profile-image")
     public ResponseEntity<?> updateProfileImage(
             @AuthenticationPrincipal String email,
-            @RequestParam MultipartFile profileImage
+            @RequestParam("profile-image") MultipartFile profileImage
             ){
         String imageUrl = userService.updateProfileImage(email, profileImage);
         return ResponseEntity.ok().body(Map.of(

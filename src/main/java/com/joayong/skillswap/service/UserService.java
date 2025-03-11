@@ -97,11 +97,12 @@ public class UserService {
         }
 
         // 로그인이 성공했을 때 JSON 생성 (액세스토큰을 포함)
+        String profileUrl = foundMember.getProfileUrl();
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "email", foundMember.getEmail(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundMember.getEmail())
-//                ,"profileImage", foundMember.getProfileImageUrl()
+                "accessToken", jwtTokenProvider.createAccessToken(foundMember.getEmail()),
+                "profile-image", profileUrl == null ? "" : profileUrl
         );
     }
 
