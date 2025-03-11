@@ -2,9 +2,11 @@ package com.joayong.skillswap.serivice;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.repository.MessageImageUrlRepository;
@@ -46,7 +48,7 @@ public class MessageService {
                 () -> new PostException(ErrorCode.MEMBER_NOT_FOUND)
         );
         Message message = Message.builder()
-                .content("메세지 내용입니다.")
+                .content(dto.getContent())
                 .post(post)
                 .sender(post.getWriter())
                 .build();
@@ -55,6 +57,7 @@ public class MessageService {
 
         // 이미지가 존재 할 경우
         if (images != null) {
+            log.info("images is not null");
             List<MessageImageUrl> imageUrlList = processImages(images, dto, message);
             message.setMessageImages(imageUrlList);
             messageRepository.save(message);
@@ -62,6 +65,7 @@ public class MessageService {
 
         return message.getId();
     }
+
     // 이미지 처리 메서드
     private List<MessageImageUrl> processImages(List<MultipartFile> images
             , MessageRequest dto, Message message) {
@@ -95,7 +99,12 @@ public class MessageService {
     }
 
     // 메세지 조회 서비스
-    public List<?> findMessages(){
+    public List<MessageResponse> findMessages(String email, String option) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new PostException(ErrorCode.MEMBER_NOT_FOUND)
+        );
 
+
+        return null;
     }
 }
