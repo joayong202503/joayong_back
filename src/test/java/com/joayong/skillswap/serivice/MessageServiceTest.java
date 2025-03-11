@@ -95,15 +95,15 @@ class MessageServiceTest {
 
     @Test
     @DisplayName("\"p@p.com\"가 받은 메세지를 조회한다")
-    void findByPostWriterTest() {
+    void findByPostWriterAndMsgStatusTest() {
         //given
         User receiver = userRepository.findByEmail("p@p.com").orElseThrow();
 
         //when
-        List<Message> byPostWriter = messageRepository.findByPostWriter(receiver);
+        List<Message> byPostWriter = messageRepository.findByPostWriterAndMsgStatus(receiver,PostStatus.C);
 
         //then
 
-        System.out.println("hashMap = " + byPostWriter);
+        System.out.println("byPostWriter = " + byPostWriter);
     }
 }
