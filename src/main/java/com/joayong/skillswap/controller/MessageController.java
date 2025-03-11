@@ -38,7 +38,7 @@ public class MessageController {
     @GetMapping
     public ResponseEntity<?> getMessageList(
             @RequestParam(name = "filter") String filter,
-            @RequestParam(name = "status") String status,
+            @RequestParam(name = "status", required = false) String status,
             @AuthenticationPrincipal String email
     ) {
 
