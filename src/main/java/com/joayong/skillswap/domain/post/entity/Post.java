@@ -18,6 +18,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @ToString(exclude = "writer")
 @Builder
 @Entity

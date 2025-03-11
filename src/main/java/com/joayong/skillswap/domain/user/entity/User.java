@@ -22,7 +22,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"talents","postList","rating"})
+@ToString(exclude = {"talents","postList","rating","matchList","messageList"})
 @Builder
 @Entity
 @Table(name = "user_tb")
