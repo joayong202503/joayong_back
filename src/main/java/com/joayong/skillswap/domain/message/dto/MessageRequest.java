@@ -17,6 +17,4 @@ public class MessageRequest {
 
     private String content;
 
-    private List<MultipartFile> images;
-
 }
