@@ -16,7 +16,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/message")
+@RequestMapping("/api/joayong/message")
 public class MessageController {
 
     private final MessageService messageService;

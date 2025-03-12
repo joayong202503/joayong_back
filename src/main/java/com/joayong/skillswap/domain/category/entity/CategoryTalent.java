@@ -37,12 +37,14 @@ public class CategoryTalent {
     private String name;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "talentGId")
-    private PostItem postItemGId;
+    @Builder.Default
+    @OneToMany(mappedBy = "talentGId")
+    private List<PostItem> postItemGId = new ArrayList<>();
 
     @JsonIgnore
-    @OneToOne(mappedBy = "talentTId")
-    private PostItem postItemTId;
+    @Builder.Default
+    @OneToMany(mappedBy = "talentTId")
+    private List<PostItem> postItemTId= new ArrayList<>();
 
     // 자식 카테고리 추가 메서드
     public void addChild(CategoryTalent child) {

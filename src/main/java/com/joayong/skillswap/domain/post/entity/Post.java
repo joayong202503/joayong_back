@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
-@ToString(exclude = {"writer","postItemList","messageList","matchList"})
+@ToString(exclude = {"writer","postItem","messageList","matchList"})
 @Builder
 @Entity
 @Table(name = "post_tb")
@@ -53,9 +53,8 @@ public class Post {
     @Column(nullable = false)
     private PostStatus status =PostStatus.N;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<PostItem> postItemList = new ArrayList<>();
+    @OneToOne(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
+    private PostItem postItem;
 
     @Builder.Default
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true)

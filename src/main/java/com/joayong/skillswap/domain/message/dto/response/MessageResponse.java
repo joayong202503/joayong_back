@@ -33,8 +33,8 @@ public class MessageResponse {
         MessageResponse build = MessageResponse.builder()
                 .messageId(message.getId())
                 .postId(message.getPost().getId())
-                .talentGive(message.getPost().getPostItemList().get(0).getTalentTId().getName())
-                .talentTake(message.getPost().getPostItemList().get(0).getTalentGId().getName())
+                .talentGive(message.getPost().getPostItem().getTalentTId().getName())
+                .talentTake(message.getPost().getPostItem().getTalentGId().getName())
                 .content(message.getContent())
                 .status(message.getMsgStatus().name())
                 .build();

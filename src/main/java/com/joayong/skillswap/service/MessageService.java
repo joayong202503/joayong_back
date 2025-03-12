@@ -46,7 +46,7 @@ public class MessageService {
         );
 
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new PostException(ErrorCode.MEMBER_NOT_FOUND)
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
         Message message = Message.builder()
                 .content(dto.getContent())
@@ -102,7 +102,7 @@ public class MessageService {
     // 메세지 조회 서비스
     public List<MessageResponse> findMessages(String email, String filter, String status) {
         User user = userRepository.findByEmail(email).orElseThrow(
-                () -> new PostException(ErrorCode.MEMBER_NOT_FOUND)
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
 
         MessageType messageType = MessageType.valueOf(filter);
