@@ -1,6 +1,5 @@
 package com.joayong.skillswap.domain.image.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.PostItem;
 import jakarta.persistence.*;
@@ -12,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString(exclude = "message")
+@ToString
 @Builder
 @Entity
 @Table(name = "message_image_url_tb")
@@ -26,7 +25,6 @@ public class MessageImageUrl {
     @Column(name = "sequence")
     private int sequence;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_item_id")
     private Message message;
