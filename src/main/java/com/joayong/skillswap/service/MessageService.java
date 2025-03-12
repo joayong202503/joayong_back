@@ -21,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -141,22 +144,28 @@ public class MessageService {
                     break;
                 }
                 List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
-
-                log.info("receiveMessageList : {}", receiveMessageList);
                 List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
 
-                log.info("sendMessageList : {}", sendMessageList);
                 receiveMessageList.addAll(sendMessageList);
-
-                log.info(" add receiveMessageList:{}", receiveMessageList);
 
                 messageList = receiveMessageList;
                 break;
             }
         }
-        // messageList 를 responseDto 로 변환
         log.info("messageList:{}", messageList);
 
-        return messageList.stream().map(MessageResponse::toDto).toList();
+        Map<String, Message> messageMap = messageList.stream()
+                // 시간순 정렬
+                .sorted(Comparator.comparing(Message::getSentAt).reversed())
+                // 중복제거
+                .collect(Collectors.toMap(
+                        Message::getId,   // Key: messageId
+                        Function.identity(),     // Value: Message 객체
+                        (existing, replacement) -> existing // 중복 발생 시 기존 값 유지
+                ));
+
+        List<Message> responseList = new ArrayList<>(messageMap.values());
+
+        return responseList.stream().map(MessageResponse::toDto).toList();
     }
 }
