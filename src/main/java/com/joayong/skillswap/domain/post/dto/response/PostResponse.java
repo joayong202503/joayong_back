@@ -9,6 +9,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter @Setter
 @AllArgsConstructor
@@ -35,7 +36,7 @@ public class PostResponse {
                 .content(postItem.getContent())
                 .name(user.getName())
                 .email(user.getEmail())
-                .images(postImageUrl.getPostItem().getPostImages())
+                .images(postItem.getPostImages())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
                 .build();

@@ -78,6 +78,6 @@ public class PostService {
     }
 
     public void findAllposts() {
-
+        postRepository.getAllPosts();
     }
 }
