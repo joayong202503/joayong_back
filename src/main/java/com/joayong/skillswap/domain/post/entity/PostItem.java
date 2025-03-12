@@ -30,19 +30,19 @@ public class PostItem {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "talent_g_id", referencedColumnName = "id", nullable = false)
     private CategoryTalent talentGId;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "talent_t_id", referencedColumnName = "id", nullable = false)
     private CategoryTalent talentTId;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id", referencedColumnName = "id", nullable = false)
     private CategoryRegion regionId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 

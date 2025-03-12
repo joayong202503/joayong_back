@@ -34,8 +34,9 @@ public class CategoryRegion {
     @Column(nullable = false, length = 255)
     private String name;
 
-    @OneToOne(mappedBy = "regionId")
-    private PostItem postItem;
+    @Builder.Default
+    @OneToMany(mappedBy = "regionId")
+    private List<PostItem> postItem= new ArrayList<>();
 
     // 자식 카테고리 추가 메서드
     public void addChild(CategoryRegion child) {
