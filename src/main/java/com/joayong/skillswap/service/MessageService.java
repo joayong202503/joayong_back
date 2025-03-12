@@ -21,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -51,7 +54,7 @@ public class MessageService {
         Message message = Message.builder()
                 .content(dto.getContent())
                 .post(post)
-                .sender(post.getWriter())
+                .sender(user)
                 .build();
 
         messageRepository.save(message);
@@ -104,57 +107,91 @@ public class MessageService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
-
+        PostStatus postStatus = null;
         MessageType messageType = MessageType.valueOf(filter);
-        PostStatus postStatus = PostStatus.valueOf(status);
+        if (status != null) {
+            postStatus = PostStatus.valueOf(status);
+        }
 
-        List<Message> messageList = new ArrayList<>();
+        List<MessageResponse> messageList = new ArrayList<>();
 
         switch (messageType) {
             // 보낸 메일 조회
-            case RECEIVE: {
-                if (status == null) {
-                    messageList = messageRepository.findBySenderId(user.getId());
-                    break;
-                }
-                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
-                break;
-            }
             case SEND: {
                 if (status == null) {
-                    messageList = messageRepository.findByPostWriter(user);
+                    messageList = messageRepository.findBySenderId(user.getId())
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, false);
+                            }).toList();
+                    ;
                     break;
                 }
-                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
+                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, false);
+                        }).toList();
+                ;
+                break;
+            }
+            case RECEIVE: {
+                if (status == null) {
+                    messageList = messageRepository.findByPostWriter(user)
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, true);
+                            }).toList();;
+                    break;
+                }
+                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, true);
+                        }).toList();;
                 break;
             }
             case ALL: {
                 if (status == null) {
-                    List<Message> receiveMessageList = messageRepository.findBySenderId(user.getId());
-                    List<Message> sendMessageList = messageRepository.findByPostWriter(user);
+
+                    List<MessageResponse> receiveMessageList = new ArrayList<>(messageRepository.findByPostWriter(user)
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, false);
+                            }).toList());
+
+                    List<MessageResponse> sendMessageList = messageRepository.findBySenderId(user.getId())
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, true);
+                            }).toList();
 
                     receiveMessageList.addAll(sendMessageList);
 
                     messageList = receiveMessageList;
                     break;
                 }
-                List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
+                List<MessageResponse> receiveMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, true);
+                        }).toList());
+                List<MessageResponse> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, true);
+                        }).toList();
 
-                log.info("receiveMessageList : {}",receiveMessageList);
-                List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
-
-                log.info("sendMessageList : {}",sendMessageList);
                 receiveMessageList.addAll(sendMessageList);
-
-                log.info(" add receiveMessageList:{}",receiveMessageList);
 
                 messageList = receiveMessageList;
                 break;
             }
         }
-        // messageList 를 responseDto 로 변환
-        log.info("messageList:{}",messageList);
+        log.info("messageList:{}", messageList);
 
-        return messageList.stream().map(MessageResponse::toDto).toList();
+        Map<String, MessageResponse> messageMap = messageList.stream()
+                // 시간순 정렬
+                .sorted(Comparator.comparing(MessageResponse::getSentAt).reversed())
+                // 중복제거
+                .collect(Collectors.toMap(
+                        MessageResponse::getMessageId,   // Key: messageId
+                        Function.identity(),     // Value: Message 객체
+                        (existing, replacement) -> existing // 중복 발생 시 기존 값 유지
+                ));
+
+        return new ArrayList<>(messageMap.values());
     }
 }
