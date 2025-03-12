@@ -1,5 +1,6 @@
 package com.joayong.skillswap.service;
 
+import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.rating.dto.request.RatingDetailRequest;
 import com.joayong.skillswap.domain.rating.dto.request.RatingRequest;
 import com.joayong.skillswap.domain.rating.entity.Rating;
@@ -7,16 +8,16 @@ import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
-import com.joayong.skillswap.repository.RatingDetailRepository;
-import com.joayong.skillswap.repository.RatingRepository;
-import com.joayong.skillswap.repository.ReviewItemRepository;
-import com.joayong.skillswap.repository.UserRepository;
+import com.joayong.skillswap.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,24 +31,36 @@ public class RatingService {
     private final ReviewItemRepository reviewItemRepository;
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
 
-    public void addRating(String email, RatingRequest dto) {
+    public double addRating(String email, RatingRequest dto) {
 
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
-        Rating rating = user.getRating();
+        Post post = postRepository.findById(dto.getPostId()).orElse(null);
+        User writer = post.getWriter();
 
-        if (rating == null) {
-            Rating newRating = Rating.builder().build();
-            ratingRepository.save(newRating);
-            user.setRating(newRating);
-            userRepository.save(user);
-        }
+        log.info("writer : {}",writer);
+
+        Rating rating = Optional.ofNullable(writer.getRating())
+                .orElseGet(()->{
+                    Rating newRating = Rating.builder().user(writer).build();
+                    writer.setRating(newRating);
+                    ratingRepository.save(newRating);
+
+                    log.info("newrating : {}",newRating);
+                    return newRating;
+                });
+        log.info("rating : {}",rating);
+
+        int size = rating.getRatingDetails().size();
+
+        log.info(" rating:{}", rating);
 
         List<RatingDetailRequest> ratingList = dto.getRatingDetailtList();
 
-        double totalRating = rating.getTotalRating();
+        AtomicInteger newRating = new AtomicInteger(0);
 
         List<RatingDetail> ratingDetailList
                 = ratingList.stream()
@@ -57,17 +70,32 @@ public class RatingService {
                             .reviewItem(reviewItemRepository.findById(ratingDto.getIndex()).orElseThrow(
                                     () -> new PostException(ErrorCode.INVALID_REVIEW_INDEX)
                             ))
+                            .user(user)
+                            .post(post)
                             .rating(rating)
                             .build();
                     ratingDetailRepository.save(ratingDetail);
+                    newRating.addAndGet(ratingDto.getRating());
                     return ratingDetail;
                 }).toList();
 
-        rating.setRatingDetails(ratingDetailList);
+        double preTotal = rating.getTotalRating();
+
+        log.info("preTotal: {}, newRating: {}, size + 5: {}", preTotal, newRating, size + 5);
+
+        double total = ((preTotal* size) + newRating.get()) / (size + 5);
+
+        log.info("total: {}", total);
+
+
+        // 별점 평점 구하기
+        rating.setTotalRating(total);
         ratingRepository.save(rating);
 
-        // 별점 평점 구하는 메서드
-        double total = getCalculateRating(rating);
+        log.info("rating : {}", rating);
+        log.info("ratingDetailList : {}", ratingDetailList);
+
+        return total;
 
     }
 
