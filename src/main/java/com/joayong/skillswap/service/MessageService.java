@@ -54,7 +54,7 @@ public class MessageService {
         Message message = Message.builder()
                 .content(dto.getContent())
                 .post(post)
-                .sender(post.getWriter())
+                .sender(user)
                 .build();
 
         messageRepository.save(message);
