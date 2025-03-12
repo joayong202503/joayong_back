@@ -113,38 +113,66 @@ public class MessageService {
             postStatus = PostStatus.valueOf(status);
         }
 
-        List<Message> messageList = new ArrayList<>();
+        List<MessageResponse> messageList = new ArrayList<>();
 
         switch (messageType) {
             // 보낸 메일 조회
-            case RECEIVE: {
-                if (status == null) {
-                    messageList = messageRepository.findBySenderId(user.getId());
-                    break;
-                }
-                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
-                break;
-            }
             case SEND: {
                 if (status == null) {
-                    messageList = messageRepository.findByPostWriter(user);
+                    messageList = messageRepository.findBySenderId(user.getId())
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, false);
+                            }).toList();
+                    ;
                     break;
                 }
-                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
+                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, false);
+                        }).toList();
+                ;
+                break;
+            }
+            case RECEIVE: {
+                if (status == null) {
+                    messageList = messageRepository.findByPostWriter(user)
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, true);
+                            }).toList();;
+                    break;
+                }
+                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, true);
+                        }).toList();;
                 break;
             }
             case ALL: {
                 if (status == null) {
-                    List<Message> receiveMessageList = messageRepository.findBySenderId(user.getId());
-                    List<Message> sendMessageList = messageRepository.findByPostWriter(user);
+
+                    List<MessageResponse> receiveMessageList = new ArrayList<>(messageRepository.findByPostWriter(user)
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, false);
+                            }).toList());
+
+                    List<MessageResponse> sendMessageList = messageRepository.findBySenderId(user.getId())
+                            .stream().map(message -> {
+                                return MessageResponse.toDto(message, true);
+                            }).toList();
 
                     receiveMessageList.addAll(sendMessageList);
 
                     messageList = receiveMessageList;
                     break;
                 }
-                List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
-                List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
+                List<MessageResponse> receiveMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, true);
+                        }).toList());
+                List<MessageResponse> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                        .stream().map(message -> {
+                            return MessageResponse.toDto(message, true);
+                        }).toList();
 
                 receiveMessageList.addAll(sendMessageList);
 
@@ -154,18 +182,16 @@ public class MessageService {
         }
         log.info("messageList:{}", messageList);
 
-        Map<String, Message> messageMap = messageList.stream()
+        Map<String, MessageResponse> messageMap = messageList.stream()
                 // 시간순 정렬
-                .sorted(Comparator.comparing(Message::getSentAt).reversed())
+                .sorted(Comparator.comparing(MessageResponse::getSentAt).reversed())
                 // 중복제거
                 .collect(Collectors.toMap(
-                        Message::getId,   // Key: messageId
+                        MessageResponse::getMessageId,   // Key: messageId
                         Function.identity(),     // Value: Message 객체
                         (existing, replacement) -> existing // 중복 발생 시 기존 값 유지
                 ));
 
-        List<Message> responseList = new ArrayList<>(messageMap.values());
-
-        return responseList.stream().map(MessageResponse::toDto).toList();
+        return new ArrayList<>(messageMap.values());
     }
 }

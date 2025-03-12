@@ -7,6 +7,7 @@ import com.joayong.skillswap.domain.post.entity.PostItem;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +26,12 @@ public class MessageResponse {
     private String talentTake;
     private String content;
     private String status;
+    private boolean isSend;
+    private LocalDateTime sentAt;
 
     private List<MessageImageUrl> imageUrlList;
 
-    public static MessageResponse toDto(Message message) {
+    public static MessageResponse toDto(Message message, boolean isSend) {
 
 
         MessageResponse build = MessageResponse.builder()
@@ -39,6 +42,8 @@ public class MessageResponse {
                 .content(message.getContent())
                 .status(message.getMsgStatus().name())
                 .imageUrlList(message.getMessageImages())
+                .isSend(isSend)
+                .sentAt(message.getSentAt())
                 .build();
         log.info("build : {}", build);
         return build;
