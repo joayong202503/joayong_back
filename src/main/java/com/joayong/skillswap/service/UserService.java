@@ -3,16 +3,19 @@ package com.joayong.skillswap.service;
 import com.joayong.skillswap.domain.user.dto.request.LoginRequest;
 import com.joayong.skillswap.domain.user.dto.request.SignUpRequest;
 import com.joayong.skillswap.domain.user.dto.response.DuplicateCheckResponse;
+import com.joayong.skillswap.domain.user.dto.response.UserProfileResponse;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.jwt.JwtTokenProvider;
 import com.joayong.skillswap.repository.UserRepository;
+import com.joayong.skillswap.util.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -26,6 +29,8 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final UserRepository userRepository;
+
+    private final FileUploadUtil fileUploadUtil;
 
     // 회원가입 중간처리
     public void signUp(SignUpRequest signUpRequest) {
@@ -79,7 +84,7 @@ public class UserService {
         String email = loginRequest.getEmail();
 
         User foundMember = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         // 사용자가 입력한 패스워드와 DB에 저장된 패스워드를 추출
         String inputPassword = loginRequest.getPassword();
@@ -92,11 +97,47 @@ public class UserService {
         }
 
         // 로그인이 성공했을 때 JSON 생성 (액세스토큰을 포함)
+        String profileUrl = foundMember.getProfileUrl();
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "email", foundMember.getEmail(),
-                "accessToken", jwtTokenProvider.createAccessToken(foundMember.getEmail())
-//                ,"profileImage", foundMember.getProfileImageUrl()
+                "accessToken", jwtTokenProvider.createAccessToken(foundMember.getEmail()),
+                "profile-image", profileUrl == null ? "" : profileUrl
         );
+    }
+
+    // 내 정보 불러오기
+    public User findMe(String email) {
+        User founduser = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserException((ErrorCode.USER_NOT_FOUND))
+                );
+        return founduser;
+    }
+
+    // 유저 정보 불러옿기
+    public UserProfileResponse findUserProfile(String id) {
+        UserProfileResponse result = userRepository.getUserProfile(id);
+        log.info("result : "+result);
+        return result;
+    }
+
+    // 유저 이름 업데이트
+    public void updateName(String email, String newName){
+        if(newName==null|| newName.isEmpty()){
+            throw new RuntimeException("유저 이름은 빈 문자열일 수 없습니다!");
+        }
+        long updatedRows = userRepository.updateName(email,newName);
+        if(updatedRows!=1){
+            throw new RuntimeException("유저 이름 변경 실패! email : "+email);
+        }
+    }
+
+    // 프로필 이미지 업데이트
+    public String updateProfileImage(String email, MultipartFile profileImage) {
+        String uploadPath = fileUploadUtil.saveFile(profileImage);
+
+        userRepository.updateProfileImage(uploadPath,email);
+
+        return uploadPath;
     }
 }

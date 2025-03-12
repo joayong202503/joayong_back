@@ -1,6 +1,10 @@
 package com.joayong.skillswap.repository.custom;
 
+import com.joayong.skillswap.domain.rating.entity.QRating;
+import com.joayong.skillswap.domain.user.dto.response.UserProfileResponse;
 import com.joayong.skillswap.domain.user.entity.QUser;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Coalesce;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -11,14 +15,42 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public void updateProfileImage(String imageUrl, String name) {
+    public void updateProfileImage(String imageUrl, String email) {
         QUser user = QUser.user;
 
         queryFactory
                 .update(user)
 //                .set(member.profileImageUrl, imageUrl)
                 .set(user.updatedAt, LocalDateTime.now())
-                .where(user.name.eq(name))
+                .where(user.email.eq(email))
+                .execute();
+    }
+
+    @Override
+    public UserProfileResponse getUserProfile(String id){
+        QUser user = QUser.user;
+        QRating rating = QRating.rating;
+
+        return queryFactory
+                .select(Projections.constructor(UserProfileResponse.class,
+                        user.email,
+                        user.name,
+                        user.profileUrl,
+                        rating.totalRating.coalesce(0.0)
+                        ))
+                .from(user)
+                .leftJoin(user.rating,rating)
+                .where(user.id.eq(id))
+                .fetchOne();
+    }
+
+    @Override
+    public long updateName(String email, String newName){
+        QUser user = QUser.user;
+        return queryFactory
+                .update(user)
+                .set(user.name,newName)
+                .where(user.email.eq(email))
                 .execute();
     }
 }
