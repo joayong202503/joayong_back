@@ -2,7 +2,7 @@ package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
-import com.joayong.skillswap.serivice.MessageService;
+import com.joayong.skillswap.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

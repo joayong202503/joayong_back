@@ -3,7 +3,7 @@ package com.joayong.skillswap.controller;
 import com.joayong.skillswap.domain.user.dto.request.LoginRequest;
 import com.joayong.skillswap.domain.user.dto.request.SignUpRequest;
 import com.joayong.skillswap.domain.user.dto.response.DuplicateCheckResponse;
-import com.joayong.skillswap.serivice.UserService;
+import com.joayong.skillswap.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

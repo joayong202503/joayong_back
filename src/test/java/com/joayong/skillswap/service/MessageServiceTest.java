@@ -1,4 +1,4 @@
-package com.joayong.skillswap.serivice;
+package com.joayong.skillswap.service;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.message.entity.Message;
@@ -18,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional

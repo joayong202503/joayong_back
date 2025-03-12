@@ -1,4 +1,4 @@
-package com.joayong.skillswap.serivice;
+package com.joayong.skillswap.service;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor

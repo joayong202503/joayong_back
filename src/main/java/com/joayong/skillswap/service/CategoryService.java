@@ -1,23 +1,18 @@
-package com.joayong.skillswap.serivice;
+package com.joayong.skillswap.service;
 
 
 import com.joayong.skillswap.domain.category.dto.response.*;
-import com.joayong.skillswap.domain.category.entity.CategoryTalent;
-import com.joayong.skillswap.domain.category.entity.QCategoryTalent;
 import com.joayong.skillswap.repository.CategoryRegionRepository;
 import com.joayong.skillswap.repository.CategoryTalentRepository;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
