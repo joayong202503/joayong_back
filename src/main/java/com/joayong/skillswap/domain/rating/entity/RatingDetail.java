@@ -16,7 +16,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = {"rating","reviewItem"})
 @Builder
 @Entity
 @Table(name = "rating_detail_tb")
@@ -30,9 +30,9 @@ public class RatingDetail {
     @JoinColumn(name = "rating_id", nullable = false)
     private Rating rating;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "ratingDetail", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ReviewItem> reviewItems = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "reviewItem_id", nullable = false)
+    private ReviewItem reviewItem;
 
     @Column(name = "value", nullable = false)
     private int ratingValue;
