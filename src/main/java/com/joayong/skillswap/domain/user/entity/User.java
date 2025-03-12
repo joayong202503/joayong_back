@@ -5,6 +5,7 @@ import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.rating.entity.Rating;
+import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.talent.entity.Talent;
 import com.joayong.skillswap.enums.Role;
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"talents","postList","rating","matchList","messageList"})
+@ToString(exclude = {"talents","postList","rating","matchList","messageList","ratingDetailList"})
 @Builder
 @Entity
 @Table(name = "user_tb")
@@ -76,6 +77,10 @@ public class User {
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "rating_id")
     private Rating rating;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private List<RatingDetail> ratingDetailList = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "client",cascade = CascadeType.ALL,orphanRemoval = true)

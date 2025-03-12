@@ -1,5 +1,7 @@
 package com.joayong.skillswap.domain.rating.entity;
 
+import com.joayong.skillswap.domain.post.entity.Post;
+import com.joayong.skillswap.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,6 +35,14 @@ public class RatingDetail {
     @ManyToOne
     @JoinColumn(name = "reviewItem_id", nullable = false)
     private ReviewItem reviewItem;
+
+    @ManyToOne
+    @JoinColumn(name = "reviewer_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
     @Column(name = "value", nullable = false)
     private int ratingValue;
