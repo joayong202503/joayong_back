@@ -76,4 +76,8 @@ public class PostService {
                     postImageUrlRepository.save(url);
                 });
     }
+
+    public void findAllposts() {
+
+    }
 }
