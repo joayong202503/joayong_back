@@ -25,7 +25,7 @@ spring:
       max-request-size: 100MB   #한번에 업로드랗 수 있는 파일의 총 용량 (대문자로 써야함)
 
   datasource:
-    url: jdbc:mariadb://localhost:3306/joayong
+    url: jdbc:mariadb://localhost:3306/joayong_test
     username: root
     password: mariadb
     driver-class-name: org.mariadb.jdbc.Driver
@@ -36,7 +36,7 @@ spring:
     database-platform: org.hibernate.dialect.MariaDB106Dialect
     hibernate:
       # ddl
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true # SQL log

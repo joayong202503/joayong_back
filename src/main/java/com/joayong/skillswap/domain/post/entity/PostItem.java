@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString(exclude = "post")
+@ToString(exclude = {"post", "talentGId", "talentTId", "regionId","postImages"})
 @Builder
 @Entity
 @Table(name = "post_item_tb")

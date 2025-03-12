@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface CategoryTalentRepository extends JpaRepository<CategoryTalent, Long> , CategoryTalentRepositoryCustom {
-
+public interface CategoryTalentRepository extends JpaRepository<CategoryTalent, Long>, CategoryTalentRepositoryCustom {
+    String findByName(String name);
 }

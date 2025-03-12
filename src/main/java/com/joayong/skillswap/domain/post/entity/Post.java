@@ -18,7 +18,8 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "writer")
+@Setter
+@ToString(exclude = {"writer","postItemList","messageList","matchList"})
 @Builder
 @Entity
 @Table(name = "post_tb")
