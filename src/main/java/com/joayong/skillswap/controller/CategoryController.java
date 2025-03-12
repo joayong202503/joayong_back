@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/api/auth/category")
+@RequestMapping("/api/joayong/category")
 @RestController
 public class CategoryController {
 
