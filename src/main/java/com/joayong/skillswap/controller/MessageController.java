@@ -41,6 +41,10 @@ public class MessageController {
             @RequestParam(name = "status", required = false) String status,
             @AuthenticationPrincipal String email
     ) {
+        filter = filter.toUpperCase();
+        if (status != null) {
+            status = status.toUpperCase();
+        }
 
         List<MessageResponse> messageResponseList
                 = messageService.findMessages(email, filter, status);
