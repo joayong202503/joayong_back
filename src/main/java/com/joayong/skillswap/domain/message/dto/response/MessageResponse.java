@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.message.dto.response;
 
+import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.post.entity.PostItem;
@@ -25,7 +26,7 @@ public class MessageResponse {
     private String content;
     private String status;
 
-    private List<String> imageUrlList;
+    private List<MessageImageUrl> imageUrlList;
 
     public static MessageResponse toDto(Message message) {
 
@@ -37,6 +38,7 @@ public class MessageResponse {
                 .talentTake(message.getPost().getPostItem().getTalentGId().getName())
                 .content(message.getContent())
                 .status(message.getMsgStatus().name())
+                .imageUrlList(message.getMessageImages())
                 .build();
         log.info("build : {}", build);
         return build;
