@@ -104,9 +104,11 @@ public class MessageService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
-
+        PostStatus postStatus = null;
         MessageType messageType = MessageType.valueOf(filter);
-        PostStatus postStatus = PostStatus.valueOf(status);
+        if (status != null) {
+            postStatus = PostStatus.valueOf(status);
+        }
 
         List<Message> messageList = new ArrayList<>();
 
@@ -140,20 +142,20 @@ public class MessageService {
                 }
                 List<Message> receiveMessageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus);
 
-                log.info("receiveMessageList : {}",receiveMessageList);
+                log.info("receiveMessageList : {}", receiveMessageList);
                 List<Message> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus);
 
-                log.info("sendMessageList : {}",sendMessageList);
+                log.info("sendMessageList : {}", sendMessageList);
                 receiveMessageList.addAll(sendMessageList);
 
-                log.info(" add receiveMessageList:{}",receiveMessageList);
+                log.info(" add receiveMessageList:{}", receiveMessageList);
 
                 messageList = receiveMessageList;
                 break;
             }
         }
         // messageList 를 responseDto 로 변환
-        log.info("messageList:{}",messageList);
+        log.info("messageList:{}", messageList);
 
         return messageList.stream().map(MessageResponse::toDto).toList();
     }
