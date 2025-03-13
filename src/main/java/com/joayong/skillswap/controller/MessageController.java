@@ -51,4 +51,37 @@ public class MessageController {
 
         return ResponseEntity.ok().body(messageResponseList);
     }
+
+    @PostMapping("/available")
+    public ResponseEntity<Map<String, Boolean>> isMessageSendable(
+            @RequestParam String postId,
+            @AuthenticationPrincipal String email
+    ) {
+        boolean isAvailable = messageService.canSendMessage(postId, email);
+        return ResponseEntity.ok().body(
+                Map.of("available", isAvailable)
+        );
+    }
+
+    @PutMapping("/reject")
+    public ResponseEntity<?> acceptMessage(
+            @RequestParam String messageId,
+            @AuthenticationPrincipal String email
+    ){
+        boolean isAccept = messageService.acceptMessage(messageId, email);
+        return ResponseEntity.ok().body(
+                Map.of("isAccept", isAccept)
+        );
+    }
+
+    @PutMapping("/accept")
+    public ResponseEntity<?> rejectMessage(
+            @RequestParam String messageId,
+            @AuthenticationPrincipal String email
+    ){
+        boolean isAccept = messageService.acceptMessage(messageId, email);
+        return ResponseEntity.ok().body(
+                Map.of("isAccept", isAccept)
+        );
+    }
 }
