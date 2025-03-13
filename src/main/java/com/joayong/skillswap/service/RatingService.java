@@ -1,11 +1,13 @@
 package com.joayong.skillswap.service;
 
+import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.rating.dto.request.RatingDetailRequest;
 import com.joayong.skillswap.domain.rating.dto.request.RatingRequest;
 import com.joayong.skillswap.domain.rating.entity.Rating;
 import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.repository.*;
@@ -32,27 +34,33 @@ public class RatingService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final MessageRepository messageRepository;
 
     public double addRating(String email, RatingRequest dto) {
 
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
-        Post post = postRepository.findById(dto.getPostId()).orElse(null);
+
+        Message message = messageRepository.findById(dto.getMessageId()).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+
+        Post post = message.getPost();
         User writer = post.getWriter();
 
-        log.info("writer : {}",writer);
+        log.info("writer : {}", writer);
 
         Rating rating = Optional.ofNullable(writer.getRating())
-                .orElseGet(()->{
+                .orElseGet(() -> {
                     Rating newRating = Rating.builder().user(writer).build();
                     writer.setRating(newRating);
                     ratingRepository.save(newRating);
 
-                    log.info("newrating : {}",newRating);
+                    log.info("newrating : {}", newRating);
                     return newRating;
                 });
-        log.info("rating : {}",rating);
+        log.info("rating : {}", rating);
 
         int size = rating.getRatingDetails().size();
 
@@ -81,16 +89,16 @@ public class RatingService {
 
         double preTotal = rating.getTotalRating();
 
-        log.info("preTotal: {}, newRating: {}, size + 5: {}", preTotal, newRating, size + 5);
-
-        double total = ((preTotal* size) + newRating.get()) / (size + 5);
+        double total = ((preTotal * size) + newRating.get()) / (size + ratingDetailList.size());
 
         log.info("total: {}", total);
-
 
         // 별점 평점 구하기
         rating.setTotalRating(total);
         ratingRepository.save(rating);
+
+        message.setMsgStatus(PostStatus.C);
+        messageRepository.save(message);
 
         log.info("rating : {}", rating);
         log.info("ratingDetailList : {}", ratingDetailList);

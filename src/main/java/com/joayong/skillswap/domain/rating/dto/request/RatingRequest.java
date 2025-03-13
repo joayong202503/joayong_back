@@ -12,6 +12,6 @@ import java.util.List;
 @ToString
 @Builder
 public class RatingRequest {
-    private String postId;
+    private String messageId;
     private List<RatingDetailRequest> ratingDetailtList;
 }
