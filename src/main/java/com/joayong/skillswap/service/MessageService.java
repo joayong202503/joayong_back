@@ -56,7 +56,8 @@ public class MessageService {
         // 메세지 전송가능 여부 확인
         if (!isMessageSendable(post, user)) {
             throw new PostException(ErrorCode.ALREADY_SENT_MESSAGE);
-        };
+        }
+        ;
 
         Message message = Message.builder()
                 .content(dto.getContent())
@@ -234,6 +235,33 @@ public class MessageService {
                 return false;
             }
         }
+        return true;
+    }
+
+    // 메세지 수락 서비스
+    public boolean acceptMessage(String messageId, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
+        );
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+
+        Post post = message.getPost();
+
+        // 본인이 받은 메세지가 아닐 시 예외처리
+        if(post.getWriter() != user){
+            throw new PostException(ErrorCode.NOT_MY_RECEIVED_MESSAGE);
+        }
+
+        // 메세지 상태 변경
+        message.setMsgStatus(PostStatus.M);
+        messageRepository.save(message);
+
+        // 게시글의 상태도 변경
+        post.setStatus(PostStatus.M);
+        postRepository.save(post);
+
         return true;
     }
 }
