@@ -62,4 +62,15 @@ public class MessageController {
                 Map.of("available", isAvailable)
         );
     }
+
+    @PutMapping
+    public ResponseEntity<?> acceptMessage(
+            @RequestParam String messageId,
+            @AuthenticationPrincipal String email
+    ){
+        boolean isAccept = messageService.acceptMessage(messageId, email);
+        return ResponseEntity.ok().body(
+                Map.of("isAccept", isAccept)
+        );
+    }
 }
