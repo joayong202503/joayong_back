@@ -1,6 +1,7 @@
 package com.joayong.skillswap.service;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
+import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
@@ -10,10 +11,7 @@ import com.joayong.skillswap.enums.MessageType;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
-import com.joayong.skillswap.repository.MessageImageUrlRepository;
-import com.joayong.skillswap.repository.MessageRepository;
-import com.joayong.skillswap.repository.PostRepository;
-import com.joayong.skillswap.repository.UserRepository;
+import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +33,12 @@ public class MessageService {
 
     private final MessageImageUrlRepository urlRepository;
     private final MessageRepository messageRepository;
+
     private final PostRepository postRepository;
+
     private final UserRepository userRepository;
+
+    private final MatchRepository matchRepository;
 
     private final FileUploadUtil fileUploadUtil;
 
@@ -250,7 +252,7 @@ public class MessageService {
         Post post = message.getPost();
 
         // 본인이 받은 메세지가 아닐 시 예외처리
-        if(post.getWriter() != user){
+        if (post.getWriter() != user) {
             throw new PostException(ErrorCode.NOT_MY_RECEIVED_MESSAGE);
         }
 
@@ -261,6 +263,14 @@ public class MessageService {
         // 게시글의 상태도 변경
         post.setStatus(PostStatus.M);
         postRepository.save(post);
+
+        // 수락했다면 매칭 테이블 데이터 생성
+        Match matching = Match.builder()
+                .client(message.getSender())
+                .post(post)
+                .build();
+
+        matchRepository.save(matching);
 
         return true;
     }
