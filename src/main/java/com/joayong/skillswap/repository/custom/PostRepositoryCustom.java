@@ -7,4 +7,6 @@ import org.springframework.data.domain.Slice;
 
 public interface PostRepositoryCustom {
     Slice<PostResponse> findPosts(Pageable pageable);
+
+    PostResponse findPostById(String id);
 }

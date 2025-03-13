@@ -39,6 +39,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.viewCount
                 ))
                 .from(post)
+                .where(post.deletedAt.isNull())
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
                 .orderBy(post.createdAt.desc())
@@ -69,5 +70,46 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         }
 
         return new SliceImpl<>(posts, pageable, hasNext);
+    }
+
+    @Override
+    public PostResponse findPostById(String id){
+        QPost post = QPost.post;
+        QPostItem postItem = QPostItem.postItem;
+        QUser user = QUser.user;
+        QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
+
+        PostResponse foundPost = queryFactory
+                .select(Projections.fields(PostResponse.class,
+                        post.id,
+                        postItem.title,
+                        postItem.content,
+                        postItem.id.as("postItemId"),
+                        user.name,
+                        user.email,
+                        post.createdAt,
+                        post.updatedAt,
+                        post.viewCount
+                ))
+                .from(post)
+                .where(post.deletedAt.isNull())
+                .where(post.id.eq(id))
+                .join(postItem).on(postItem.post.eq(post))
+                .join(user).on(post.writer.eq(user))
+                .fetchOne();
+
+        List<PostImageUrlResponse> images = queryFactory
+                .select(Projections.constructor(PostImageUrlResponse.class,
+                        postImageUrl.imageUrl,
+                        postImageUrl.id,
+                        postImageUrl.sequence
+                ))
+                .from(postImageUrl)
+                .where(postImageUrl.postItem.id.eq(foundPost.getPostItemId()))
+                .orderBy(postImageUrl.sequence.asc())
+                .fetch();
+        foundPost.setImages(images);
+
+        return foundPost;
     }
 }

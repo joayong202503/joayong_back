@@ -9,6 +9,7 @@ import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.post.entity.PostItem;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
+import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -88,5 +90,10 @@ public class PostService {
                 "hasNext", posts.hasNext()
                 , "postList", posts
         );
+    }
+
+    public PostResponse findPostById(String id) {
+        return Optional.ofNullable(postRepository.findPostById(id))
+                .orElseThrow(() -> new PostException(ErrorCode.NOT_FOUND_POST));
     }
 }

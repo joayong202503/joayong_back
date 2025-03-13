@@ -2,6 +2,7 @@ package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.post.dto.request.PostCreateRequest;
 import com.joayong.skillswap.domain.post.dto.request.PostCreateRequest;
+import com.joayong.skillswap.domain.post.dto.response.PostResponse;
 import com.joayong.skillswap.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class PostController {
     }
 
     //전체 게시글 조회
-    @GetMapping
+    @GetMapping("/main")
     public ResponseEntity<?> getPosts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -50,4 +51,10 @@ public class PostController {
     }
 
     //단일 게시글 조회
+    @GetMapping
+    public ResponseEntity<PostResponse> getPostById(
+            @RequestParam String id
+    ){
+        return ResponseEntity.ok().body(postService.findPostById(id));
+    }
 }
