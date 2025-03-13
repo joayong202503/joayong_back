@@ -3,6 +3,7 @@ package com.joayong.skillswap.domain.message.entity;
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.post.entity.Post;
+import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.PostStatus;
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"post", "messageImages","sender"})
+@ToString(exclude = {"post", "messageImages","sender","ratingDetailList"})
 @Builder
 @Entity
 @Table(name = "message_tb")
@@ -51,5 +52,9 @@ public class Message {
     @OneToMany(mappedBy = "message",cascade = CascadeType.REMOVE,orphanRemoval = true)
     @Builder.Default
     private List<MessageImageUrl> messageImages = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "message")
+    private List<RatingDetail> ratingDetailList = new ArrayList<>();
 
 }

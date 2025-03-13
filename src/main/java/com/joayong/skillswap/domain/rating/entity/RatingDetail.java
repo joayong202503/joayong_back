@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.rating.entity;
 
+import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -18,7 +19,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString(exclude = {"rating","reviewItem"})
+@ToString(exclude = {"rating","reviewItem","message"})
 @Builder
 @Entity
 @Table(name = "rating_detail_tb")
@@ -43,6 +44,10 @@ public class RatingDetail {
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "message_id", nullable = false)
+    private Message message;
 
     @Column(name = "value", nullable = false)
     private int ratingValue;
