@@ -5,6 +5,8 @@ import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.PostStatus;
+import com.joayong.skillswap.exception.ErrorCode;
+import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.repository.MessageImageUrlRepository;
 import com.joayong.skillswap.repository.MessageRepository;
 import com.joayong.skillswap.repository.PostRepository;
@@ -79,11 +81,11 @@ class MessageServiceTest {
         //when
         List<Post> postList = postRepository.findByWriter(receiver);
 
-        Map<String,List<Message>> hashMap= new HashMap<>();
+        Map<String, List<Message>> hashMap = new HashMap<>();
 
         postList.forEach(post -> {
-            List<Message> messageList = messageRepository.findByPostId(post.getId());
-            hashMap.put(post.getId(),messageList);
+            List<Message> messageList = messageRepository.findByPostWriter(receiver);
+            hashMap.put(post.getId(), messageList);
         });
 
         //then
@@ -98,10 +100,54 @@ class MessageServiceTest {
         User receiver = userRepository.findByEmail("p@p.com").orElseThrow();
 
         //when
-        List<Message> byPostWriter = messageRepository.findByPostWriterAndMsgStatus(receiver,PostStatus.C);
+        List<Message> byPostWriter = messageRepository.findByPostWriterAndMsgStatus(receiver, PostStatus.C);
 
         //then
 
         System.out.println("byPostWriter = " + byPostWriter);
+    }
+
+    @Test
+    @DisplayName("메세지 수락시 메세지의 상태값과 게시글의 상태값이 M으로 변한다")
+    void acceptMessageTest() {
+        //given
+        String messageId = "f5d26fd8-2916-43e5-a29b-1b2fb7795c5d";
+        String email = "q@q.com";
+
+        //when
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
+        );
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+
+        Post post = message.getPost();
+
+        // 본인이 받은 메세지가 아닐 시 예외처리
+        if (post.getWriter() != user) {
+            throw new PostException(ErrorCode.NOT_MY_RECEIVED_MESSAGE);
+        }
+
+        // 메세지 상태 변경
+        message.setMsgStatus(PostStatus.M);
+        messageRepository.save(message);
+
+        // 게시글의 상태도 변경
+        post.setStatus(PostStatus.M);
+        postRepository.save(post);
+
+        //then
+        Message message2 = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+
+        Post post2 = message.getPost();
+
+        PostStatus msgStatus = message2.getMsgStatus();
+        PostStatus status = post2.getStatus();
+
+        System.out.println("msgStatus = " + msgStatus);
+        System.out.println("status = " + status);
     }
 }

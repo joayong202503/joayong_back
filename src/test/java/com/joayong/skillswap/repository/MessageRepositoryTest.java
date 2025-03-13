@@ -73,7 +73,7 @@ class MessageRepositoryTest {
                 .talentTId(talent2)
                 .build();
         postItemRepository.save(postItem);
-        post.setPostItemList(List.of(postItem));
+        post.setPostItem(postItem);
         postRepository.save(post);
     }
 
