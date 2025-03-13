@@ -1,70 +1,73 @@
 package com.joayong.skillswap.repository.custom;
 
+import com.joayong.skillswap.domain.image.dto.response.PostImageUrlResponse;
+import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.image.entity.QPostImageUrl;
 import com.joayong.skillswap.domain.post.dto.response.PostResponse;
-import com.joayong.skillswap.domain.post.entity.Post;
-import com.joayong.skillswap.domain.post.entity.PostItem;
 import com.joayong.skillswap.domain.post.entity.QPost;
 import com.joayong.skillswap.domain.post.entity.QPostItem;
 import com.joayong.skillswap.domain.user.entity.QUser;
-import com.joayong.skillswap.domain.user.entity.User;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import org.springframework.data.domain.PageImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class PostRepositoryImpl implements PostRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public void getAllPosts(){
+    public Slice<PostResponse> findPosts(Pageable pageable) {
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
-        // Post + PostItem + User를 조인
-        List<PostResponse> results = queryFactory
-                .select(post, postItem, user)
+        // 메인 쿼리 (Post와 PostItem, User만 조인)
+        List<PostResponse> posts = queryFactory
+                .select(Projections.fields(PostResponse.class,
+                        post.id,
+                        postItem.title,
+                        postItem.content,
+                        postItem.id.as("postItemId"),
+                        user.name,
+                        user.email,
+                        post.createdAt,
+                        post.updatedAt,
+                        post.viewCount
+                ))
                 .from(post)
-                .join(post.postItem, postItem)
-                .join(post.writer, user)
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-                .fetch()
-                .stream()
-                .map(tuple -> {
-                    Post p = tuple.get(post);
-                    PostItem pi = tuple.get(postItem);
-                    User u = tuple.get(user);
+                .join(postItem).on(postItem.post.eq(post))
+                .join(user).on(post.writer.eq(user))
+                .orderBy(post.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1) // **더보기 방식 지원을 위해 +1 조회**
+                .fetch();
 
-                    // 해당 PostItem에 속한 이미지 가져오기
-                    List<String> imageUrls = queryFactory
-                            .select(postImageUrl.imageUrl)
-                            .from(postImageUrl)
-                            .where(postImageUrl.postItem.eq(pi))
-                            .fetch();
+        // PostItem과 PostImageUrl을 매핑하여 이미지 리스트 설정
+        posts.forEach(postResponse -> {
+            List<PostImageUrlResponse> images = queryFactory
+                    .select(Projections.constructor(PostImageUrlResponse.class,
+                            postImageUrl.imageUrl,
+                            postImageUrl.id,
+                            postImageUrl.sequence
+                    ))
+                    .from(postImageUrl)
+                    .where(postImageUrl.postItem.id.eq(postResponse.getPostItemId()))
+                    .orderBy(postImageUrl.sequence.asc())
+                    .fetch();
+            postResponse.setImages(images);
+        });
 
-                    return PostResponse.builder()
-                            .id(p.getId())
-                            .title(pi.getTitle())
-                            .content(pi.getContent())
-                            .name(u.getName())
-                            .email(u.getEmail())
-                            .images(imageUrls) // 이미지 리스트 추가
-                            .createdAt(p.getCreatedAt())
-                            .updatedAt(p.getUpdatedAt())
-                            .viewCount(p.getViewCount())
-                            .build();
-                })
-                .collect(Collectors.toList());
+        // **Slice 처리를 위해 마지막 데이터가 있는지 확인**
+        boolean hasNext = false;
+        if (posts.size() > pageable.getPageSize()) {
+            posts.remove(pageable.getPageSize());
+            hasNext = true;
+        }
 
-        long total = queryFactory
-                .select(post.count())
-                .from(post)
-                .fetchOne();
-
-        return new PageImpl<>(results, pageable, total);
+        return new SliceImpl<>(posts, pageable, hasNext);
     }
 }

@@ -6,6 +6,8 @@ import com.joayong.skillswap.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +25,7 @@ public class PostController {
 
     private final PostService postService;
 
+    //게시글 등록
     @PostMapping
     public ResponseEntity<?> createPost(
             @AuthenticationPrincipal String email,
@@ -35,9 +38,16 @@ public class PostController {
         ));
     }
 
+    //전체 게시글 조회
     @GetMapping
-    public ResponseEntity<?> getAllPosts(){
-        postService.findAllposts();
-        return null;
+    public ResponseEntity<?> getPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page,size);
+
+        return ResponseEntity.ok().body(postService.findPosts(pageable));
     }
+
+    //단일 게시글 조회
 }

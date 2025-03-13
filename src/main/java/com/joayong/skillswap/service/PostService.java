@@ -4,21 +4,24 @@ import com.joayong.skillswap.domain.category.entity.CategoryRegion;
 import com.joayong.skillswap.domain.category.entity.CategoryTalent;
 import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.post.dto.request.PostCreateRequest;
+import com.joayong.skillswap.domain.post.dto.response.PostResponse;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.post.entity.PostItem;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.repository.*;
-import com.joayong.skillswap.repository.custom.CategoryRegionRepositoryCustom;
 import com.joayong.skillswap.util.FileUploadUtil;
+import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
@@ -77,7 +80,13 @@ public class PostService {
                 });
     }
 
-    public void findAllposts() {
-        postRepository.getAllPosts();
+    @Transactional(readOnly = true)
+    public Map<String,Object> findPosts(Pageable pageable) {
+        Slice<PostResponse> posts = postRepository.findPosts(pageable);
+
+        return Map.of(
+                "hasNext", posts.hasNext()
+                , "postList", posts
+        );
     }
 }
