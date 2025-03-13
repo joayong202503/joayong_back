@@ -1,16 +1,14 @@
 package com.joayong.skillswap.service;
 
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
+import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
-import com.joayong.skillswap.repository.MessageImageUrlRepository;
-import com.joayong.skillswap.repository.MessageRepository;
-import com.joayong.skillswap.repository.PostRepository;
-import com.joayong.skillswap.repository.UserRepository;
+import com.joayong.skillswap.repository.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +33,8 @@ class MessageServiceTest {
     UserRepository userRepository;
     @Autowired
     PostRepository postRepository;
+    @Autowired
+    MatchRepository matchRepository;
 
     @Test
     @DisplayName("메세지를 옵션에 따라 조회가능하다")
@@ -137,6 +137,9 @@ class MessageServiceTest {
         post.setStatus(PostStatus.M);
         postRepository.save(post);
 
+        Match match = Match.builder().client(user).post(post).build();
+        matchRepository.save(match);
+
         //then
         Message message2 = messageRepository.findById(messageId).orElseThrow(
                 () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
@@ -147,7 +150,12 @@ class MessageServiceTest {
         PostStatus msgStatus = message2.getMsgStatus();
         PostStatus status = post2.getStatus();
 
+        int size = post2.getMatchList().size();
+
         System.out.println("msgStatus = " + msgStatus);
         System.out.println("status = " + status);
+        System.out.println("matchList = " + size);
     }
+
+
 }
