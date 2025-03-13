@@ -44,6 +44,7 @@ public class MessageService {
     // 메세지 전송 서비스
     public String sendMessage(String email, MessageRequest dto, List<MultipartFile> images) {
 
+
         Post post = postRepository.findById(dto.getPostId()).orElseThrow(
                 () -> new PostException(ErrorCode.NOT_FOUND_POST)
         );
@@ -51,6 +52,12 @@ public class MessageService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
+
+        // 메세지 전송가능 여부 확인
+        if (!isMessageSendable(post, user)) {
+            throw new PostException(ErrorCode.ALREADY_SENT_MESSAGE);
+        };
+
         Message message = Message.builder()
                 .content(dto.getContent())
                 .post(post)
@@ -138,13 +145,15 @@ public class MessageService {
                     messageList = messageRepository.findByPostWriter(user)
                             .stream().map(message -> {
                                 return MessageResponse.toDto(message, true);
-                            }).toList();;
+                            }).toList();
+                    ;
                     break;
                 }
                 messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, true);
-                        }).toList();;
+                        }).toList();
+                ;
                 break;
             }
             case ALL: {
@@ -193,5 +202,38 @@ public class MessageService {
                 ));
 
         return new ArrayList<>(messageMap.values());
+    }
+
+    // 메세지 발송 가능 여부 확인 서비스
+    public boolean canSendMessage(String postId, String email) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_POST)
+        );
+
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
+        );
+
+        return isMessageSendable(post, user);
+    }
+
+    // 메세지 발송 여부 확인 메서드
+    public boolean isMessageSendable(Post post, User sender) {
+        // 게시글의 메세지리스트
+        List<Message> messageList = post.getMessageList();
+
+        // 로그인한 유저의 메세지만 필터
+        List<Message> senderMessageList = messageList.stream()
+                .filter(message -> message.getSender() == sender)
+                .toList();
+
+        // 이미 메세지를 보내 수락대기중이거나 수락됬을 시엔 발송 불가
+        for (Message message : senderMessageList) {
+            if (message.getMsgStatus() == PostStatus.N
+                || message.getMsgStatus() == PostStatus.M) {
+                return false;
+            }
+        }
+        return true;
     }
 }
