@@ -58,7 +58,7 @@ public class PostController {
         return ResponseEntity.ok().body(postService.findPostById(id));
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseEntity<?> deletePost(
             @AuthenticationPrincipal String email,
             @RequestParam("id") String postId
