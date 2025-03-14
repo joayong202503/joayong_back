@@ -57,4 +57,15 @@ public class PostController {
     ){
         return ResponseEntity.ok().body(postService.findPostById(id));
     }
+
+    @DeleteMapping
+    public ResponseEntity<?> deletePost(
+            @AuthenticationPrincipal String email,
+            @RequestParam("id") String postId
+    ){
+        postService.deletePost(postId,email);
+        return ResponseEntity.ok().body(Map.of(
+                "message","삭제완료"
+        ));
+    }
 }

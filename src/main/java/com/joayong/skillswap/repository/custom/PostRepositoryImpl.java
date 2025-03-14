@@ -12,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -111,5 +112,16 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         foundPost.setImages(images);
 
         return foundPost;
+    }
+
+    @Override
+    public long deletePost(String postId,String id) {
+        QPost post = QPost.post;
+        return queryFactory
+                .update(post)
+                .set(post.deletedAt, LocalDateTime.now())
+                .where(post.id.eq(postId))
+                .where(post.writer.id.eq(id))
+                .execute();
     }
 }

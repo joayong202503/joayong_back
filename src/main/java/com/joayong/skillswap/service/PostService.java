@@ -96,4 +96,15 @@ public class PostService {
         return Optional.ofNullable(postRepository.findPostById(id))
                 .orElseThrow(() -> new PostException(ErrorCode.NOT_FOUND_POST));
     }
+
+    public void deletePost(String postId,String email) {
+        Optional<User> foundUser = userRepository.findByEmail(email);
+        if(foundUser.isEmpty()){
+            throw new UserException(ErrorCode.USER_NOT_FOUND);
+        }
+        long deleted = postRepository.deletePost(postId,foundUser.get().getId());
+        if(deleted==0){
+            throw new RuntimeException("삭제요청실패");
+        }
+    }
 }

@@ -9,4 +9,6 @@ public interface PostRepositoryCustom {
     Slice<PostResponse> findPosts(Pageable pageable);
 
     PostResponse findPostById(String id);
+
+    long deletePost(String PostId, String id);
 }
