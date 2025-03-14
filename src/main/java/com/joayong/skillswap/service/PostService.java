@@ -4,6 +4,7 @@ import com.joayong.skillswap.domain.category.entity.CategoryRegion;
 import com.joayong.skillswap.domain.category.entity.CategoryTalent;
 import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.post.dto.request.PostCreateRequest;
+import com.joayong.skillswap.domain.post.dto.request.UpdatePostRequest;
 import com.joayong.skillswap.domain.post.dto.response.PostResponse;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.post.entity.PostItem;
@@ -82,6 +83,36 @@ public class PostService {
                 });
     }
 
+    //게시글 수정
+    public void updatePost(String email, UpdatePostRequest request, List<MultipartFile> images) {
+        User founduser = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
+        CategoryTalent giveTalent = categoryTalentRepository.findById(request.getTalentGId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 줄 재능을 찾을 수 없습니다."));
+        CategoryTalent takeTalent = categoryTalentRepository.findById(request.getTalentTId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 받을 재능을 찾을 수 없습니다."));
+        CategoryRegion region = categoryRegionRepository.findById(request.getRegionId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 지역을 찾을 수 없습니다."));
+
+        postRepository.updatePost(founduser.getId(),request);
+
+        AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
+
+        PostResponse post = postRepository.findPostById(request.getPostId());
+        Optional<PostItem> postItem = postItemRepository.findById(post.getPostItemId());
+        images.stream()
+                .filter(image -> image != null && !image.isEmpty())
+                .forEach(image -> {
+                    String uploadPath = fileUploadUtil.saveFile(image);
+                    PostImageUrl url = PostImageUrl.builder()
+                            .postItem(postItem.get())
+                            .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
+                            .imageUrl(uploadPath)
+                            .build();
+                    postImageUrlRepository.save(url);
+                });
+    }
+
     @Transactional(readOnly = true)
     public Map<String,Object> findPosts(Pageable pageable) {
         Slice<PostResponse> posts = postRepository.findPosts(pageable);
@@ -107,4 +138,30 @@ public class PostService {
             throw new RuntimeException("삭제요청실패");
         }
     }
+
+    public List<PostResponse> findMyPosts(String email) {
+        Optional<User> foundUser = userRepository.findByEmail(email);
+        if(foundUser.isEmpty()){
+            throw new UserException(ErrorCode.USER_NOT_FOUND);
+        }
+        return postRepository.findMyPosts(foundUser.get().getId());
+    }
+
+    public List<PostResponse> findUserPosts(String userId) {
+        return postRepository.findUserPosts(userId);
+    }
+
+    public void viewCount(String postId,String email) {
+        if(email==null){
+            postRepository.viewCount(postId);
+            return;
+        }
+        Optional<User> foundUser = userRepository.findByEmail(String.valueOf(email));
+        if(foundUser.isEmpty()){
+            throw new UserException(ErrorCode.USER_NOT_FOUND);
+        }
+        postRepository.viewCountWithId(postId,foundUser.get().getId());
+    }
+
+
 }

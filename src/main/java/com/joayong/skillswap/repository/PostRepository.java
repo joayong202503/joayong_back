@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post,String>, PostRepositoryCustom {
     List<Post> findByWriter(User writer);
+
 }

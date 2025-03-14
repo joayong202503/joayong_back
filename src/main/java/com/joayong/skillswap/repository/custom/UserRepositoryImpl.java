@@ -1,5 +1,6 @@
 package com.joayong.skillswap.repository.custom;
 
+import com.joayong.skillswap.domain.post.dto.response.PostResponse;
 import com.joayong.skillswap.domain.rating.entity.QRating;
 import com.joayong.skillswap.domain.user.dto.response.UserProfileResponse;
 import com.joayong.skillswap.domain.user.entity.QUser;
@@ -9,6 +10,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepositoryCustom{
@@ -53,4 +55,6 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                 .where(user.email.eq(email))
                 .execute();
     }
+
+
 }
