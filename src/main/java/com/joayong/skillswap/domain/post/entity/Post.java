@@ -3,6 +3,7 @@ package com.joayong.skillswap.domain.post.entity;
 import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.entity.Message;
+import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -63,5 +64,9 @@ public class Post {
     @Builder.Default
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Match> matchList = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "post")
+    private List<RatingDetail> ratingDetailList = new ArrayList<>();
 
 }

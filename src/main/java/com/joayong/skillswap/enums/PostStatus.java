@@ -1,5 +1,5 @@
 package com.joayong.skillswap.enums;
 
 public enum PostStatus {
-    N,M,C
+    N,M,C,D
 }

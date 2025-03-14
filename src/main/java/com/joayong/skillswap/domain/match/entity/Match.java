@@ -21,7 +21,7 @@ public class Match {
     @Builder.Default
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)")
-    private String id= UUID.randomUUID().toString();;
+    private String id= UUID.randomUUID().toString();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
