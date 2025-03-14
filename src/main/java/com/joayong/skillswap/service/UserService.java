@@ -101,6 +101,7 @@ public class UserService {
         return Map.of(
                 "message", "로그인에 성공했습니다.",
                 "email", foundMember.getEmail(),
+                "name", foundMember.getName(),
                 "accessToken", jwtTokenProvider.createAccessToken(foundMember.getEmail()),
                 "profile-image", profileUrl == null ? "" : profileUrl
         );
