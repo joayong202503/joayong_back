@@ -68,19 +68,22 @@ public class PostService {
                 .build();
         PostItem savedPostItem = postItemRepository.save(postItem);
 
-        AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
 
-        images.stream()
-                .filter(image -> image != null && !image.isEmpty())
-                .forEach(image -> {
-                    String uploadPath = fileUploadUtil.saveFile(image);
-                    PostImageUrl url = PostImageUrl.builder()
-                            .postItem(savedPostItem)
-                            .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
-                            .imageUrl(uploadPath)
-                            .build();
-                    postImageUrlRepository.save(url);
-                });
+        if (images != null && !images.isEmpty()) {
+            AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
+
+            images.stream()
+                    .filter(image -> image != null && !image.isEmpty()) // 추가적인 null 체크
+                    .forEach(image -> {
+                        String uploadPath = fileUploadUtil.saveFile(image);
+                        PostImageUrl url = PostImageUrl.builder()
+                                .postItem(savedPostItem)
+                                .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
+                                .imageUrl(uploadPath)
+                                .build();
+                        postImageUrlRepository.save(url);
+                    });
+        }
     }
 
     //게시글 수정
