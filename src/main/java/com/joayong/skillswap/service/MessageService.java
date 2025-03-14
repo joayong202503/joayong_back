@@ -131,14 +131,14 @@ public class MessageService {
                 if (status == null) {
                     messageList = messageRepository.findBySenderId(user.getId())
                             .stream().map(message -> {
-                                return MessageResponse.toDto(message, false);
+                                return MessageResponse.toDto(message, true);
                             }).toList();
                     ;
                     break;
                 }
                 messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
                         .stream().map(message -> {
-                            return MessageResponse.toDto(message, false);
+                            return MessageResponse.toDto(message, true);
                         }).toList();
                 ;
                 break;
@@ -147,14 +147,14 @@ public class MessageService {
                 if (status == null) {
                     messageList = messageRepository.findByPostWriter(user)
                             .stream().map(message -> {
-                                return MessageResponse.toDto(message, true);
+                                return MessageResponse.toDto(message, false);
                             }).toList();
                     ;
                     break;
                 }
                 messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
                         .stream().map(message -> {
-                            return MessageResponse.toDto(message, true);
+                            return MessageResponse.toDto(message, false);
                         }).toList();
                 ;
                 break;
@@ -177,18 +177,18 @@ public class MessageService {
                     messageList = receiveMessageList;
                     break;
                 }
-                List<MessageResponse> receiveMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                List<MessageResponse> sendMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, true);
                         }).toList());
-                List<MessageResponse> sendMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                List<MessageResponse> receiveMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
                         .stream().map(message -> {
-                            return MessageResponse.toDto(message, true);
+                            return MessageResponse.toDto(message, false);
                         }).toList();
 
-                receiveMessageList.addAll(sendMessageList);
+                sendMessageList.addAll(receiveMessageList);
 
-                messageList = receiveMessageList;
+                messageList = sendMessageList;
                 break;
             }
         }
