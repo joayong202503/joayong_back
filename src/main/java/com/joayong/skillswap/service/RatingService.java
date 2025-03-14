@@ -168,6 +168,7 @@ public class RatingService {
                     return RatingDetailResponse.builder()
                             .postId(message.getPost().getId())
                             .messageId(messageId)
+                            .createAt(reviewerByMessage.get(messageId).getCreatedAt())
                             .reviewer(reviewerByMessage.get(messageId).getName()) // reviewer 추가
                             .reviewList(groupedReviews.getOrDefault(messageId, List.of())
                                     .stream()
