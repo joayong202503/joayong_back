@@ -63,7 +63,7 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/reject")
+    @PutMapping("/accept")
     public ResponseEntity<?> acceptMessage(
             @RequestParam String messageId,
             @AuthenticationPrincipal String email
@@ -74,14 +74,14 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/accept")
+    @PutMapping("/reject")
     public ResponseEntity<?> rejectMessage(
             @RequestParam String messageId,
             @AuthenticationPrincipal String email
     ){
-        boolean isAccept = messageService.acceptMessage(messageId, email);
+        boolean isReject = messageService.rejectMessage(messageId, email);
         return ResponseEntity.ok().body(
-                Map.of("isAccept", isAccept)
+                Map.of("isReject", isReject)
         );
     }
 }
