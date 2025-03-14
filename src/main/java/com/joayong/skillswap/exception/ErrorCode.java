@@ -35,6 +35,12 @@ public enum ErrorCode {
     // 메세지 관련 에러
     NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND,"조회되지않는 메세지입니다."),
 
+
+    // 리뷰 관련 에러
+    INVALID_REVIEW_INDEX(HttpStatus.BAD_REQUEST,"잘못된 리뷰번호입니다."),
+    ALREADY_SENT_MESSAGE(HttpStatus.BAD_REQUEST, "이미 보낸 메시지가 있습니다."),
+    NOT_MY_RECEIVED_MESSAGE(HttpStatus.BAD_REQUEST, "내가 받은 메시지가 아닙니다."),
+
     // 등록실패 오류
     FAIL_TO_RESISTER(HttpStatus.BAD_REQUEST,"등록에 실패했습니다."),
     ;

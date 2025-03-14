@@ -1,6 +1,5 @@
 package com.joayong.skillswap.domain.rating.entity;
 
-import com.joayong.skillswap.domain.talent.entity.Talent;
 import com.joayong.skillswap.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,4 +39,11 @@ public class Rating {
     @OneToOne(mappedBy = "rating", cascade = CascadeType.ALL, orphanRemoval = true)
     private User user;
 
+    public void setRatingDetails(List<RatingDetail> ratingDetails) {
+        this.ratingDetails = ratingDetails;
+    }
+
+    public void setTotalRating(double totalRating) {
+        this.totalRating = totalRating;
+    }
 }
