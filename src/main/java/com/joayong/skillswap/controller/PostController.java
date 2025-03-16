@@ -68,11 +68,11 @@ public class PostController {
     }
 
     //단일 게시글 조회
-    @GetMapping
+    @GetMapping("/{exchangeId}")
     public ResponseEntity<PostResponse> getPostById(
-            @RequestParam String id
+            @PathVariable String exchangeId
     ){
-        return ResponseEntity.ok().body(postService.findPostById(id));
+        return ResponseEntity.ok().body(postService.findPostById(exchangeId));
     }
 
     @DeleteMapping("/delete")
