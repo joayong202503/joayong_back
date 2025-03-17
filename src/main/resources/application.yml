@@ -36,7 +36,7 @@ spring:
     database-platform: org.hibernate.dialect.MariaDB106Dialect
     hibernate:
       # ddl
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true # SQL log

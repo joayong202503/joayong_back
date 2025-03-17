@@ -25,6 +25,12 @@ public class PostResponse {
     private String content;
     private String name;
     private String email;
+    @JsonProperty("talent-t-id")
+    private Long talentTId;
+    @JsonProperty("talent-g-id")
+    private Long talentGId;
+    @JsonProperty("region-id")
+    private Long regionId;
     @JsonProperty("post-item-id")
     private String postItemId;
     private List<PostImageUrlResponse> images;

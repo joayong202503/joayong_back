@@ -116,6 +116,7 @@ public class PostService {
                 });
     }
 
+    //게시글 전체 조회
     @Transactional(readOnly = true)
     public Map<String,Object> findPosts(Pageable pageable) {
         Slice<PostResponse> posts = postRepository.findPosts(pageable);
