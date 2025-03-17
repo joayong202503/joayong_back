@@ -168,4 +168,11 @@ public class PostService {
     }
 
 
+    public int getOnlyViewCount(String postId) {
+
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_POST)
+        );
+        return post.getViewCount();
+    }
 }
