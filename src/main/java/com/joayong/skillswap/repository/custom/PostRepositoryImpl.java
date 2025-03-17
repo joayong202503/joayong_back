@@ -59,6 +59,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.deletedAt.isNull())
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1) // **더보기 방식 지원을 위해 +1 조회**
@@ -124,6 +127,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.id.eq(id))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .fetchOne();
 
         List<PostImageUrlResponse> images = queryFactory
@@ -190,6 +196,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.writer.id.eq(id))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .fetch();
 
@@ -245,6 +254,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.writer.id.eq(id))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .fetch();
 
