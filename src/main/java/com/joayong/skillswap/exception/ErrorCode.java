@@ -31,6 +31,7 @@ public enum ErrorCode {
     // 포스트관련 에러
     INVALID_START_END_TIME(HttpStatus.BAD_REQUEST, "시작 시간이 종료 시간보다 늦을 수 없습니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND,"조회되지않는 게시글입니다."),
+    SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND,"검색결과가 없습니다."),
 
     // 메세지 관련 에러
     NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND,"조회되지않는 메세지입니다."),

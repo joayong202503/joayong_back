@@ -14,6 +14,7 @@ import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
+import com.p6spy.engine.logging.Category;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -174,5 +176,15 @@ public class PostService {
                 () -> new PostException(ErrorCode.NOT_FOUND_POST)
         );
         return post.getViewCount();
+    }
+
+    public Map<String,Object> searchByOption(String keyword,Pageable pageable) {
+        Slice<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
+
+        if(posts.isEmpty()) throw new PostException(ErrorCode.SEARCH_NOT_FOUND);
+        return Map.of(
+                "hasNext", posts.hasNext()
+                , "postList", posts
+        );
     }
 }

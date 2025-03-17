@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -114,13 +115,23 @@ public class PostController {
 
     @GetMapping("/view-count/{postId}")
     public ResponseEntity<Map<String,Object>> getOnlyViewCount(
-            @RequestParam("postId") String postId
+            @PathVariable("postId") String postId
     ) {
         int viewCount = postService.getOnlyViewCount(postId);
 
         return ResponseEntity.ok().body(Map.of(
                 "postId", postId,
                 "viewCount", viewCount));
+    }
+    @GetMapping("/search")
+    public ResponseEntity<?> searchByOption(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ){
+        Pageable pageable = PageRequest.of(page, size);
+        Map<String,Object> posts = postService.searchByOption(keyword,pageable);
+        return ResponseEntity.ok().body(posts);
     }
 
 
