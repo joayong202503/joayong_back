@@ -94,9 +94,9 @@ public class PostController {
     }
 
     //특정 유저 포스트 전부
-    @GetMapping("user")
+    @GetMapping("user/{id}")
     public ResponseEntity<?> getUserPosts(
-            @RequestParam("id") String userId
+            @PathVariable("id") String userId
     ) {
         return ResponseEntity.ok().body(postService.findUserPosts(userId));
     }

@@ -156,15 +156,15 @@ public class PostService {
     }
 
     public void viewCount(String postId,String email) {
-        if(email==null){
+        log.info("postId : "+postId+", email : "+email);
+        if(email.equals("anonymousUser")){
             postRepository.viewCount(postId);
+            log.info("뷰카운트 체크");
             return;
         }
-        Optional<User> foundUser = userRepository.findByEmail(String.valueOf(email));
-        if(foundUser.isEmpty()){
-            throw new UserException(ErrorCode.USER_NOT_FOUND);
-        }
-        postRepository.viewCountWithId(postId,foundUser.get().getId());
+        User founduser = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
+        postRepository.viewCountWithId(postId, founduser.getId());
     }
 
 

@@ -33,6 +33,8 @@ public class PostResponse {
     private Long regionId;
     @JsonProperty("post-item-id")
     private String postItemId;
+    @JsonProperty("profile-url")
+    private String profileUrl;
     private List<PostImageUrlResponse> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
