@@ -30,6 +30,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // 메인 쿼리 (Post와 PostItem, User만 조인)
@@ -39,9 +42,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         postItem.title,
                         postItem.content,
                         postItem.id.as("postItemId"),
-                        postItem.talentGId.id.as("talentGId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         user.profileUrl,
                         user.name,
                         user.email,
@@ -88,6 +94,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         PostResponse foundPost = queryFactory
@@ -99,9 +108,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         user.name,
                         user.email,
                         user.profileUrl,
-                        postItem.talentGId.id.as("talentGId"),
+                        postItem.id.as("postItemId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
@@ -146,6 +159,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // 메인 쿼리 (Post와 PostItem, User만 조인)
@@ -158,9 +174,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         user.name,
                         user.email,
                         user.profileUrl,
-                        postItem.talentGId.id.as("talentGId"),
+                        postItem.id.as("postItemId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
@@ -194,6 +214,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // 메인 쿼리 (Post와 PostItem, User만 조인)
@@ -206,9 +229,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         user.name,
                         user.email,
                         user.profileUrl,
-                        postItem.talentGId.id.as("talentGId"),
+                        postItem.id.as("postItemId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
@@ -324,11 +351,11 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         user.email,
                         user.profileUrl.as("profileUrl"),
                         postItem.talentTId.id.as("talentTId"),
-                        talentT.name.as("talentTName"),       // 줄 재능 이름
+                        talentT.name.as("talentTName"),
                         postItem.talentGId.id.as("talentGId"),
-                        talentG.name.as("talentGName"),       // 받을 재능 이름
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
-                        region.name.as("regionName"),         // 지역 이름
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
