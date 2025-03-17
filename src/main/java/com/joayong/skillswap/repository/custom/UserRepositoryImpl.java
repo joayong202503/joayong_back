@@ -22,7 +22,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
 
         queryFactory
                 .update(user)
-//                .set(member.profileImageUrl, imageUrl)
+                .set(user.profileUrl, imageUrl)
                 .set(user.updatedAt, LocalDateTime.now())
                 .where(user.email.eq(email))
                 .execute();

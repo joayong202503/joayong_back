@@ -68,17 +68,17 @@ public class PostController {
     }
 
     //단일 게시글 조회
-    @GetMapping
+    @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(
-            @RequestParam String id
+            @PathVariable String id
     ){
         return ResponseEntity.ok().body(postService.findPostById(id));
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deletePost(
             @AuthenticationPrincipal String email,
-            @RequestParam("id") String postId
+            @PathVariable("id") String postId
     ){
         postService.deletePost(postId,email);
         return ResponseEntity.ok().body(Map.of(
@@ -101,10 +101,10 @@ public class PostController {
         return ResponseEntity.ok().body(postService.findUserPosts(userId));
     }
 
-    @PostMapping("/view-count")
+    @PostMapping("/view-count/{id}")
     public ResponseEntity<?> viewCount(
             @Nullable @AuthenticationPrincipal String email,
-            @RequestParam("id") String postId
+            @PathVariable("id") String postId
     ){
         postService.viewCount(postId,email);
         return ResponseEntity.ok().body(Map.of(
