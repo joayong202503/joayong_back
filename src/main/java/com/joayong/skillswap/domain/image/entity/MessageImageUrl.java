@@ -26,7 +26,6 @@ public class MessageImageUrl {
     @Column(name = "sequence")
     private int sequence;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_item_id")
     private Message message;
