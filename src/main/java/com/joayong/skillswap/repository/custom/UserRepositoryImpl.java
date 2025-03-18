@@ -29,7 +29,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
     }
 
     @Override
-    public UserProfileResponse getUserProfile(String id){
+    public UserProfileResponse getUserProfile(String name){
         QUser user = QUser.user;
         QRating rating = QRating.rating;
 
@@ -42,7 +42,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                         ))
                 .from(user)
                 .leftJoin(user.rating,rating)
-                .where(user.id.eq(id))
+                .where(user.name.eq(name))
                 .fetchOne();
     }
 
