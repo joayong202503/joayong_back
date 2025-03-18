@@ -220,7 +220,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
     //해당 유저 포스트 전체 조회
     @Override
-    public List<PostResponse> findUserPosts(String id) {
+    public List<PostResponse> findUserPosts(String name) {
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
@@ -252,7 +252,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 ))
                 .from(post)
                 .where(post.deletedAt.isNull())
-                .where(post.writer.id.eq(id))
+                .where(post.writer.name.eq(name))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
                 .join(postItem.regionId, region)

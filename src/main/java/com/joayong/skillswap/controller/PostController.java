@@ -95,11 +95,11 @@ public class PostController {
     }
 
     //특정 유저 포스트 전부
-    @GetMapping("user/{id}")
+    @GetMapping("user/{name}")
     public ResponseEntity<?> getUserPosts(
-            @PathVariable("id") String userId
+            @PathVariable String name
     ) {
-        return ResponseEntity.ok().body(postService.findUserPosts(userId));
+        return ResponseEntity.ok().body(postService.findUserPosts(name));
     }
 
     @PostMapping("/view-count/{id}")

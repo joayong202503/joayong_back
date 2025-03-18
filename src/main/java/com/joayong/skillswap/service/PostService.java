@@ -153,8 +153,8 @@ public class PostService {
         return postRepository.findMyPosts(foundUser.get().getId());
     }
 
-    public List<PostResponse> findUserPosts(String userId) {
-        return postRepository.findUserPosts(userId);
+    public List<PostResponse> findUserPosts(String name) {
+        return postRepository.findUserPosts(name);
     }
 
     public void viewCount(String postId,String email) {

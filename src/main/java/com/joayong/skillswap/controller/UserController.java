@@ -39,7 +39,7 @@ public class UserController {
     // 사용자 프로필 조회
     @GetMapping("/profile/{name}")
     public ResponseEntity<UserProfileResponse> getUserProfile(
-            @PathVariable String name
+            @PathVariable("name") String name
     ){
         UserProfileResponse response = userService.findUserProfile(name);
         log.info("response : "+response);
