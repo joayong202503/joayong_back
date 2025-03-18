@@ -29,6 +29,8 @@ public class PostResponse {
     private String talentTName;
     @JsonProperty("talent-g-id")
     private Long talentGId;
+    @JsonProperty("talent-t-id")
+    private Long talentTId;
     @JsonProperty("talent-g-name")
     private String talentGName;
     @JsonProperty("region-id")

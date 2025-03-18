@@ -92,6 +92,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return new SliceImpl<>(posts, pageable, hasNext);
     }
 
+    //단일 게시물 id로 조회
     @Override
     public PostResponse findPostById(String id){
         QPost post = QPost.post;
