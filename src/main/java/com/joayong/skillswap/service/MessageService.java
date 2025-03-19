@@ -13,8 +13,12 @@ import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -295,5 +299,24 @@ public class MessageService {
         messageRepository.save(message);
 
         return true;
+    }
+
+    public Page<MessageResponse> findPagingMessage(String email, String filter, String status, Pageable pageable){
+
+        MessageType messageType = MessageType.valueOf(filter);
+        PostStatus postStatus = (status != null) ? PostStatus.valueOf(status) : null;
+
+        List<Tuple> messageTupleList = messageRepository.getMessageList(email, messageType, postStatus, pageable);
+        boolean hasNext = messageTupleList.size() > pageable.getPageSize();
+
+        List<MessageResponse> messageResponseList
+                = messageTupleList.stream().map(MessageResponse::toDtoPage).toList();
+
+
+        if (hasNext) {
+            messageResponseList.remove(messageResponseList.size() - 1); // 추가로 가져온 1개 제거
+        }
+
+        return new PageImpl<>(messageResponseList, pageable, hasNext ? pageable.getPageSize() + 1L : pageable.getOffset());
     }
 }
