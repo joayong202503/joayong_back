@@ -122,6 +122,9 @@ public class PostService {
     @Transactional(readOnly = true)
     public Map<String,Object> findPosts(Pageable pageable) {
         Slice<PostResponse> posts = postRepository.findPosts(pageable);
+        if(posts.isEmpty()||posts==null){
+            throw new PostException(ErrorCode.NOT_FOUND_POST);
+        }
 
         return Map.of(
                 "hasNext", posts.hasNext()
@@ -153,8 +156,14 @@ public class PostService {
         return postRepository.findMyPosts(foundUser.get().getId());
     }
 
+    //유저 이름으로 게시글 불러오기
     public List<PostResponse> findUserPosts(String name) {
-        return postRepository.findUserPosts(name);
+        userRepository.findByName(name).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        List<PostResponse> foundPosts = postRepository.findUserPosts(name);
+        if(foundPosts.isEmpty() || foundPosts==null){
+            throw new PostException(ErrorCode.NOT_FOUND_POST);
+        }
+        return foundPosts;
     }
 
     public void viewCount(String postId,String email) {

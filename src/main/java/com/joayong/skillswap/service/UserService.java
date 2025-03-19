@@ -139,6 +139,8 @@ public class UserService {
 
     // 유저 정보 불러옿기
     public UserProfileResponse findUserProfile(String name) {
+        userRepository.findByName(name)
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
         UserProfileResponse result = userRepository.getUserProfile(name);
         log.info("result : "+result);
         return result;
