@@ -14,6 +14,7 @@ import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
+import com.p6spy.engine.logging.Category;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -120,6 +122,9 @@ public class PostService {
     @Transactional(readOnly = true)
     public Map<String,Object> findPosts(Pageable pageable) {
         Slice<PostResponse> posts = postRepository.findPosts(pageable);
+        if(posts.isEmpty()||posts==null){
+            throw new PostException(ErrorCode.NOT_FOUND_POST);
+        }
 
         return Map.of(
                 "hasNext", posts.hasNext()
@@ -151,20 +156,26 @@ public class PostService {
         return postRepository.findMyPosts(foundUser.get().getId());
     }
 
-    public List<PostResponse> findUserPosts(String userId) {
-        return postRepository.findUserPosts(userId);
+    //유저 이름으로 게시글 불러오기
+    public List<PostResponse> findUserPosts(String name) {
+        userRepository.findByName(name).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        List<PostResponse> foundPosts = postRepository.findUserPosts(name);
+        if(foundPosts.isEmpty() || foundPosts==null){
+            throw new PostException(ErrorCode.NOT_FOUND_POST);
+        }
+        return foundPosts;
     }
 
     public void viewCount(String postId,String email) {
-        if(email==null){
+        log.info("postId : "+postId+", email : "+email);
+        if(email.equals("anonymousUser")){
             postRepository.viewCount(postId);
+            log.info("뷰카운트 체크");
             return;
         }
-        Optional<User> foundUser = userRepository.findByEmail(String.valueOf(email));
-        if(foundUser.isEmpty()){
-            throw new UserException(ErrorCode.USER_NOT_FOUND);
-        }
-        postRepository.viewCountWithId(postId,foundUser.get().getId());
+        User founduser = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
+        postRepository.viewCountWithId(postId, founduser.getId());
     }
 
 
@@ -174,5 +185,15 @@ public class PostService {
                 () -> new PostException(ErrorCode.NOT_FOUND_POST)
         );
         return post.getViewCount();
+    }
+
+    public Map<String,Object> searchByOption(String keyword,Pageable pageable) {
+        Slice<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
+
+        if(posts.isEmpty()) throw new PostException(ErrorCode.SEARCH_NOT_FOUND);
+        return Map.of(
+                "hasNext", posts.hasNext()
+                , "postList", posts
+        );
     }
 }

@@ -43,8 +43,19 @@ public class UserService {
             이를 최종 회원가입에서 한번 더 검사해서 방지
          */
         String email = signUpRequest.getEmail();
-        userRepository.findByEmail(email)
-                .ifPresent(m -> {throw new UserException(ErrorCode.DUPLICATE_EMAIL);});
+        if (email.contains("@")) {
+            userRepository.findByEmail(email)
+                    .ifPresent(m -> {
+                        throw new UserException(ErrorCode.DUPLICATE_EMAIL);
+                    });
+        } else {
+            userRepository.findByName(signUpRequest.getName())
+                    .ifPresent(m -> {
+                        throw new UserException(ErrorCode.DUPLICATE_USERNAME);
+                    });
+        }
+
+
 
         // 순수 비밀번호를 꺼내서 암호화
         String rawPassword = signUpRequest.getPassword();
@@ -61,12 +72,23 @@ public class UserService {
     }
 
 
-    public DuplicateCheckResponse checkDuplicate(String email) {
-        // 중복된 경우를 클라이언트에게 알려야 함
-         return userRepository.findByEmail(email)
-                 .map(m -> DuplicateCheckResponse.unavailable("이미 사용 중인 이메일입니다."))
-                 .orElse(DuplicateCheckResponse.available());
+    public DuplicateCheckResponse checkDuplicate(String type,String value) {
 
+        switch (type) {
+            case "email":
+                log.info("duplicate result : "+userRepository.findByEmail(value));
+                // 중복된 경우를 클라이언트에게 알려야 함
+                return userRepository.findByEmail(value)
+                        .map(m -> DuplicateCheckResponse.unavailable("이미 사용 중인 이메일입니다."))
+                        .orElse(DuplicateCheckResponse.available());
+            case "name":
+                log.info("duplicate result : "+userRepository.findByName(value));
+                return userRepository.findByName(value)
+                        .map(m -> DuplicateCheckResponse.unavailable("이미 사용 중인 사용자 이름입니다."))
+                        .orElse(DuplicateCheckResponse.available());
+            default:
+                throw new UserException(ErrorCode.INVALID_SIGNUP_DATA);
+        }
     }
 
     // 로그인 처리 (인증 처리)
@@ -116,8 +138,10 @@ public class UserService {
     }
 
     // 유저 정보 불러옿기
-    public UserProfileResponse findUserProfile(String id) {
-        UserProfileResponse result = userRepository.getUserProfile(id);
+    public UserProfileResponse findUserProfile(String name) {
+        userRepository.findByName(name)
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
+        UserProfileResponse result = userRepository.getUserProfile(name);
         log.info("result : "+result);
         return result;
     }

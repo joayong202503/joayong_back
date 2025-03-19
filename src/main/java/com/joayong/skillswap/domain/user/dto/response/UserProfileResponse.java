@@ -3,15 +3,15 @@ package com.joayong.skillswap.domain.user.dto.response;
 import com.joayong.skillswap.domain.rating.entity.Rating;
 import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter @Setter
 @AllArgsConstructor
+@NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Builder
 public class UserProfileResponse {
     private String email;

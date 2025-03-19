@@ -27,4 +27,6 @@ public interface PostRepositoryCustom {
     long viewCountWithId(String postId, String id);
 
     void updatePost(String id, UpdatePostRequest request);
+
+    Slice<PostResponse> searchPosts(String keyword,Pageable pageable);
 }

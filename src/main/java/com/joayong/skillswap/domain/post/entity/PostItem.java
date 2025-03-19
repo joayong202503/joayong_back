@@ -27,7 +27,7 @@ public class PostItem {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length=2200)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -23,6 +23,7 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
 //    DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 사용 중인 사용자 이름입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
+    DUPLICATE_USERNAME(HttpStatus.BAD_REQUEST, "이미 사용 중인 이름입니다."),
 
     // 인증 관련
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
@@ -31,6 +32,7 @@ public enum ErrorCode {
     // 포스트관련 에러
     INVALID_START_END_TIME(HttpStatus.BAD_REQUEST, "시작 시간이 종료 시간보다 늦을 수 없습니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND,"조회되지않는 게시글입니다."),
+    SEARCH_NOT_FOUND(HttpStatus.NOT_FOUND,"검색결과가 없습니다."),
 
     // 메세지 관련 에러
     NOT_FOUND_MESSAGE(HttpStatus.NOT_FOUND,"조회되지않는 메세지입니다."),

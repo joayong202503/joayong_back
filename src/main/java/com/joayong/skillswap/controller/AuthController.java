@@ -37,15 +37,16 @@ public class AuthController {
     }
 
     // 중복확인을 검사하는 API
-    @GetMapping("/email-duplicate")
+    @GetMapping("/duplicate-check")
     public ResponseEntity<DuplicateCheckResponse> checkDuplicate(
-            @RequestParam String email
+            @RequestParam String value,
+            @RequestParam String type
     ) {
-        log.info("check duplicate email: {}", email);
+        log.info("check duplicate value: {}", value);
 
-        userService.checkDuplicate(email);
+        DuplicateCheckResponse duplicateCheckResponse = userService.checkDuplicate(type, value);
 
-        return ResponseEntity.ok().body(DuplicateCheckResponse.available());
+        return ResponseEntity.ok().body(duplicateCheckResponse);
     }
 
     // 로그인 검증 API

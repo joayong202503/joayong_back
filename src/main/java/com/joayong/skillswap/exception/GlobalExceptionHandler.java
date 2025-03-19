@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFound(UserException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(Map.of("message", "해당 사용자를 찾을 수 없습니다.", "error", e.getMessage()));
+                .body(Map.of("message", "사용자를 조회하는데 문제가 발생했습니다.", "error", e.getMessage()));
     }
     // 회원가입시 유저 중복이면
     @ExceptionHandler(DuplicateUserException.class)

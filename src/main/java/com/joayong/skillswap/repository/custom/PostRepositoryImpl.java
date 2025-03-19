@@ -1,5 +1,7 @@
 package com.joayong.skillswap.repository.custom;
 
+import com.joayong.skillswap.domain.category.entity.QCategoryRegion;
+import com.joayong.skillswap.domain.category.entity.QCategoryTalent;
 import com.joayong.skillswap.domain.image.dto.response.PostImageUrlResponse;
 import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.image.entity.QPostImageUrl;
@@ -11,6 +13,7 @@ import com.joayong.skillswap.domain.post.entity.QPost;
 import com.joayong.skillswap.domain.post.entity.QPostItem;
 import com.joayong.skillswap.domain.user.entity.QUser;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -27,6 +30,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // 메인 쿼리 (Post와 PostItem, User만 조인)
@@ -36,9 +42,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         postItem.title,
                         postItem.content,
                         postItem.id.as("postItemId"),
-                        postItem.talentGId.id.as("talentGId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
+                        user.profileUrl,
                         user.name,
                         user.email,
                         post.createdAt,
@@ -49,6 +59,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.deletedAt.isNull())
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1) // **더보기 방식 지원을 위해 +1 조회**
@@ -79,11 +92,15 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         return new SliceImpl<>(posts, pageable, hasNext);
     }
 
+    //단일 게시물 id로 조회
     @Override
     public PostResponse findPostById(String id){
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         PostResponse foundPost = queryFactory
@@ -94,9 +111,14 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         postItem.id.as("postItemId"),
                         user.name,
                         user.email,
-                        postItem.talentGId.id.as("talentGId"),
+                        user.profileUrl,
+                        postItem.id.as("postItemId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
@@ -106,6 +128,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.id.eq(id))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .fetchOne();
 
         List<PostImageUrlResponse> images = queryFactory
@@ -141,6 +166,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // 메인 쿼리 (Post와 PostItem, User만 조인)
@@ -152,9 +180,14 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         postItem.id.as("postItemId"),
                         user.name,
                         user.email,
-                        postItem.talentGId.id.as("talentGId"),
+                        user.profileUrl,
+                        postItem.id.as("postItemId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
@@ -164,6 +197,9 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.writer.id.eq(id))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .fetch();
 
@@ -184,10 +220,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
     //해당 유저 포스트 전체 조회
     @Override
-    public List<PostResponse> findUserPosts(String id) {
+    public List<PostResponse> findUserPosts(String name) {
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // 메인 쿼리 (Post와 PostItem, User만 조인)
@@ -199,18 +238,26 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         postItem.id.as("postItemId"),
                         user.name,
                         user.email,
-                        postItem.talentGId.id.as("talentGId"),
+                        user.profileUrl,
+                        postItem.id.as("postItemId"),
                         postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
                         postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
                         post.createdAt,
                         post.updatedAt,
                         post.viewCount
                 ))
                 .from(post)
                 .where(post.deletedAt.isNull())
-                .where(post.writer.id.eq(id))
+                .where(post.writer.name.eq(name))
                 .join(postItem).on(postItem.post.eq(post))
                 .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .fetch();
 
@@ -284,5 +331,81 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(postImageUrl.postItem.id.eq(original.getPostItem().getId()))
                 .execute();
 
+    }
+
+    @Override
+    public Slice<PostResponse> searchPosts(String keyword, Pageable pageable) {
+        QPost post = QPost.post;
+        QPostItem postItem = QPostItem.postItem;
+        QUser user = QUser.user;
+        QCategoryRegion region = QCategoryRegion.categoryRegion;
+        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
+        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
+        QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
+
+        // 키워드 검색 조건
+        BooleanExpression keywordPredicate = (keyword == null || keyword.trim().isEmpty())
+                ? null
+                : postItem.title.containsIgnoreCase(keyword)
+                .or(postItem.content.containsIgnoreCase(keyword))
+                .or(user.name.containsIgnoreCase(keyword))
+                .or(region.name.containsIgnoreCase(keyword))
+                .or(talentT.name.containsIgnoreCase(keyword))
+                .or(talentG.name.containsIgnoreCase(keyword));
+
+        // 메인 쿼리
+        List<PostResponse> posts = queryFactory
+                .select(Projections.fields(PostResponse.class,
+                        post.id.stringValue(),
+                        postItem.title,
+                        postItem.content,
+                        postItem.id.stringValue().as("postItemId"),
+                        user.name,
+                        user.email,
+                        user.profileUrl.as("profileUrl"),
+                        postItem.talentTId.id.as("talentTId"),
+                        talentT.name.as("talentTName"),
+                        postItem.talentGId.id.as("talentGId"),
+                        talentG.name.as("talentGName"),
+                        postItem.regionId.id.as("regionId"),
+                        region.name.as("regionName"),
+                        post.createdAt,
+                        post.updatedAt,
+                        post.viewCount
+                ))
+                .from(post)
+                .join(postItem).on(postItem.post.eq(post))
+                .join(user).on(post.writer.eq(user))
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
+                .where(post.deletedAt.isNull()
+                        .and(keywordPredicate))
+                .orderBy(post.createdAt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        // 이미지 추가
+        posts.forEach(postResponse -> {
+            List<PostImageUrlResponse> images = queryFactory
+                    .select(Projections.constructor(PostImageUrlResponse.class,
+                            postImageUrl.imageUrl,
+                            postImageUrl.id,
+                            postImageUrl.sequence
+                    ))
+                    .from(postImageUrl)
+                    .where(postImageUrl.postItem.id.eq(postResponse.getPostItemId()))
+                    .orderBy(postImageUrl.sequence.asc())
+                    .fetch();
+            postResponse.setImages(images);
+        });
+        boolean hasNext = false;
+        if (posts.size() > pageable.getPageSize()) {
+            posts.remove(pageable.getPageSize());
+            hasNext = true;
+        }
+
+        return new SliceImpl<>(posts, pageable, hasNext);
     }
 }

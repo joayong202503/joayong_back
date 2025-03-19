@@ -36,11 +36,12 @@ public class UserController {
         ));
     }
 
-    @GetMapping("/profile/{id}")
+    // 사용자 프로필 조회
+    @GetMapping("/profile/{name}")
     public ResponseEntity<UserProfileResponse> getUserProfile(
-            @PathVariable String id
+            @PathVariable("name") String name
     ){
-        UserProfileResponse response = userService.findUserProfile(id);
+        UserProfileResponse response = userService.findUserProfile(name);
         log.info("response : "+response);
         if(response==null){
             throw new UserException(ErrorCode.USER_NOT_FOUND);

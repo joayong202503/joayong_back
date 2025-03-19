@@ -11,5 +11,5 @@ public interface UserRepositoryCustom{
     void updateProfileImage(String imageUrl, String username);
     long updateName(String email, String newName);
 
-    UserProfileResponse getUserProfile(String id);
+    UserProfileResponse getUserProfile(String name);
 }

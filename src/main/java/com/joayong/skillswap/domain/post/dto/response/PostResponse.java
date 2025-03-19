@@ -25,14 +25,22 @@ public class PostResponse {
     private String content;
     private String name;
     private String email;
-    @JsonProperty("talent-t-id")
-    private Long talentTId;
+    @JsonProperty("talent-t-name")
+    private String talentTName;
     @JsonProperty("talent-g-id")
     private Long talentGId;
+    @JsonProperty("talent-t-id")
+    private Long talentTId;
+    @JsonProperty("talent-g-name")
+    private String talentGName;
     @JsonProperty("region-id")
     private Long regionId;
+    @JsonProperty("region-name")
+    private String regionName;
     @JsonProperty("post-item-id")
     private String postItemId;
+    @JsonProperty("profile-url")
+    private String profileUrl;
     private List<PostImageUrlResponse> images;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
