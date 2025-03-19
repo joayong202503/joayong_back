@@ -1,5 +1,6 @@
 package com.joayong.skillswap.domain.message.dto.response;
 
+import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import lombok.*;
 
 @Getter @Setter
