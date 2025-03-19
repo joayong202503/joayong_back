@@ -1,10 +1,15 @@
 package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
+import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +27,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<?> sendMessage(
+    public ResponseEntity<Map<String,Object>> sendMessage(
             @RequestPart(value = "message", required = true) MessageRequest dto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal String email
@@ -36,7 +41,7 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getMessageList(
+    public ResponseEntity<List<MessageResponse>> getMessageList(
             @RequestParam(name = "filter") String filter,
             @RequestParam(name = "status", required = false) String status,
             @AuthenticationPrincipal String email
@@ -63,9 +68,9 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/accept")
-    public ResponseEntity<?> acceptMessage(
-            @RequestParam String messageId,
+    @PutMapping("/accept/{messageId}")
+    public ResponseEntity<Map<String,Boolean>> acceptMessage(
+            @PathVariable String messageId,
             @AuthenticationPrincipal String email
     ){
         boolean isAccept = messageService.acceptMessage(messageId, email);
@@ -74,14 +79,37 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/reject")
-    public ResponseEntity<?> rejectMessage(
-            @RequestParam String messageId,
+    @PutMapping("/reject/{messageId}")
+    public ResponseEntity<Map<String,Boolean>> rejectMessage(
+            @PathVariable String messageId,
             @AuthenticationPrincipal String email
     ){
         boolean isReject = messageService.rejectMessage(messageId, email);
         return ResponseEntity.ok().body(
                 Map.of("isReject", isReject)
         );
+    }
+
+    @GetMapping("/paging")
+    public ResponseEntity<PageResponse<MessageResponse>> getPagingMessage(
+            @RequestParam String filter,
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @AuthenticationPrincipal String email
+    ){
+        Pageable pageable = PageRequest.of(page,size);
+        PageResponse<MessageResponse> pagingMessage = messageService.findPagingMessage(email, filter, status, pageable);
+
+        return ResponseEntity.ok().body(pagingMessage);
+    }
+
+    @GetMapping("/{messageId}")
+    public ResponseEntity<?> getMessageUrlList(
+            @PathVariable String messageId
+    ){
+        MessageDetailResponse messageUrlList = messageService.getMessageUrlList(messageId);
+
+        return ResponseEntity.ok().body(messageUrlList);
     }
 }
