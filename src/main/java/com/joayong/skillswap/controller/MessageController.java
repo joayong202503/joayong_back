@@ -1,6 +1,7 @@
 package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @PostMapping
-    public ResponseEntity<?> sendMessage(
+    public ResponseEntity<Map<String,Object>> sendMessage(
             @RequestPart(value = "message", required = true) MessageRequest dto,
             @RequestPart(value = "images", required = false) List<MultipartFile> images,
             @AuthenticationPrincipal String email
@@ -39,7 +40,7 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getMessageList(
+    public ResponseEntity<List<MessageResponse>> getMessageList(
             @RequestParam(name = "filter") String filter,
             @RequestParam(name = "status", required = false) String status,
             @AuthenticationPrincipal String email
@@ -67,7 +68,7 @@ public class MessageController {
     }
 
     @PutMapping("/accept")
-    public ResponseEntity<?> acceptMessage(
+    public ResponseEntity<Map<String,Boolean>> acceptMessage(
             @RequestParam String messageId,
             @AuthenticationPrincipal String email
     ){
@@ -78,7 +79,7 @@ public class MessageController {
     }
 
     @PutMapping("/reject")
-    public ResponseEntity<?> rejectMessage(
+    public ResponseEntity<Map<String,Boolean>> rejectMessage(
             @RequestParam String messageId,
             @AuthenticationPrincipal String email
     ){
@@ -89,7 +90,7 @@ public class MessageController {
     }
 
     @GetMapping("/paging")
-    public ResponseEntity<?> getPagingMessage(
+    public ResponseEntity<Page<MessageResponse>> getPagingMessage(
             @RequestParam String filter,
             @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
@@ -100,5 +101,14 @@ public class MessageController {
         Page<MessageResponse> pagingMessage = messageService.findPagingMessage(email, filter, status, pageable);
 
         return ResponseEntity.ok().body(pagingMessage);
+    }
+
+    @GetMapping("/{messageId}")
+    public ResponseEntity<?> getMessageUrlList(
+            @PathVariable String messageId
+    ){
+        MessageDetailResponse messageUrlList = messageService.getMessageUrlList(messageId);
+
+        return ResponseEntity.ok().body(messageUrlList);
     }
 }
