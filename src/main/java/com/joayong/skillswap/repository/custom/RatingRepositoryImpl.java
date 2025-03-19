@@ -44,7 +44,7 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
                 .where(rating.id.eq(ratingId))
                 .orderBy(ratingDetail.message.id.asc(), ratingDetail.reviewItem.id.asc())
                 .offset(pageable.getOffset())
-                .limit((pageable.getPageSize() + 1)*5)
+                .limit(pageable.getPageSize()*5)
                 .fetch();
 
         return fetch;
