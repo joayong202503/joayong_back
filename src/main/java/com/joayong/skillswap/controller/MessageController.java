@@ -5,6 +5,9 @@ import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -83,5 +86,19 @@ public class MessageController {
         return ResponseEntity.ok().body(
                 Map.of("isReject", isReject)
         );
+    }
+
+    @GetMapping("/paging")
+    public ResponseEntity<?> getPagingMessage(
+            @RequestParam String filter,
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @AuthenticationPrincipal String email
+    ){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<MessageResponse> pagingMessage = messageService.findPagingMessage(email, filter, status, pageable);
+
+        return ResponseEntity.ok().body(pagingMessage);
     }
 }
