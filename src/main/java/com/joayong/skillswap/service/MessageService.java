@@ -3,6 +3,7 @@ package com.joayong.skillswap.service;
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
@@ -319,4 +320,12 @@ public class MessageService {
 
         return new PageImpl<>(messageResponseList, pageable, hasNext ? pageable.getPageSize() + 1L : pageable.getOffset());
     }
+
+    public MessageDetailResponse getMessageUrlList(String messageId){
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+        return MessageDetailResponse.toDto(message);
+    }
+
 }
