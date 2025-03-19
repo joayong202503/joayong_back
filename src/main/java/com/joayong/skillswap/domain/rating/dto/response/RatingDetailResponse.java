@@ -12,6 +12,7 @@ import java.util.List;
 @ToString
 @Builder
 public class RatingDetailResponse {
+    private String ratingDetailId;
     private String postId;
     private String messageId;
     private String reviewer;
