@@ -29,7 +29,6 @@ public class MessageResponse {
     private boolean isSend;
     private LocalDateTime sentAt;
 
-    private List<MessageImageUrl> imageUrlList;
 
     public static MessageResponse toDto(Message message, boolean isSend) {
 
@@ -41,7 +40,6 @@ public class MessageResponse {
                 .talentTake(message.getPost().getPostItem().getTalentGId().getName())
                 .content(message.getContent())
                 .status(message.getMsgStatus().name())
-                .imageUrlList(message.getMessageImages())
                 .isSend(isSend)
                 .sentAt(message.getSentAt())
                 .build();
