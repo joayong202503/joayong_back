@@ -67,9 +67,9 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/accept")
+    @PutMapping("/accept/{messageId}")
     public ResponseEntity<Map<String,Boolean>> acceptMessage(
-            @RequestParam String messageId,
+            @PathVariable String messageId,
             @AuthenticationPrincipal String email
     ){
         boolean isAccept = messageService.acceptMessage(messageId, email);
@@ -78,9 +78,9 @@ public class MessageController {
         );
     }
 
-    @PutMapping("/reject")
+    @PutMapping("/reject/{messageId}")
     public ResponseEntity<Map<String,Boolean>> rejectMessage(
-            @RequestParam String messageId,
+            @PathVariable String messageId,
             @AuthenticationPrincipal String email
     ){
         boolean isReject = messageService.rejectMessage(messageId, email);
