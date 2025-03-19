@@ -8,6 +8,7 @@ import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.enums.MessageType;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
@@ -302,26 +303,52 @@ public class MessageService {
         return true;
     }
 
-    public Page<MessageResponse> findPagingMessage(String email, String filter, String status, Pageable pageable){
+    public PageResponse<MessageResponse> findPagingMessage(String email, String filter, String status, Pageable pageable) {
 
         MessageType messageType = MessageType.valueOf(filter);
         PostStatus postStatus = (status != null) ? PostStatus.valueOf(status) : null;
 
+        // 조건에 따른 전체 데이터 개수 조회
+        long totalCount = messageRepository.countMessages(messageType, postStatus, email, pageable);
+
+        if (totalCount == 0) {
+            return PageResponse.<MessageResponse>builder()
+                    .totalCount(0)
+                    .totalPages(0)
+                    .currentPage(pageable.getPageNumber() + 1) // 클라이언트에선 1페이지가 첫페이지니까 더해줌
+                    .hasNext(false)
+                    .hasPrevious(false)
+                    .pageSize(pageable.getPageSize())
+                    .data(Collections.emptyList()) // 빈 리스트 반환
+                    .build();
+        }
+
         List<Tuple> messageTupleList = messageRepository.getMessageList(email, messageType, postStatus, pageable);
-        boolean hasNext = messageTupleList.size() > pageable.getPageSize();
 
         List<MessageResponse> messageResponseList
                 = messageTupleList.stream().map(MessageResponse::toDtoPage).toList();
 
+        // 페이지네이션 계산
+        int totalPages = (int) Math.ceil((double) totalCount / pageable.getPageSize());
+        boolean hasNext = pageable.getPageNumber() < totalPages - 1;
+        boolean hasPrevious = pageable.getPageNumber() > 0;
 
-        if (hasNext) {
-            messageResponseList.remove(messageResponseList.size() - 1); // 추가로 가져온 1개 제거
-        }
+        // 제너릭 타입 T를 MessageResponse로 지정하고, build() 메서드를 호출하여 객체를 반환
+        return PageResponse.<MessageResponse>builder()
+                .totalCount(totalCount)
+                .totalPages(totalPages)
+                .currentPage(pageable.getPageNumber() + 1) // 클라이언트에선 1페이지가 첫페이지니까 더해줌
+                .hasNext(hasNext)
+                .hasPrevious(hasPrevious)
+                .pageSize(pageable.getPageSize())
+                .data(messageResponseList)
+                .build();
 
-        return new PageImpl<>(messageResponseList, pageable, hasNext ? pageable.getPageSize() + 1L : pageable.getOffset());
     }
 
-    public MessageDetailResponse getMessageUrlList(String messageId){
+
+    // 메세지 이미지 조회 서비스
+    public MessageDetailResponse getMessageUrlList(String messageId) {
         Message message = messageRepository.findById(messageId).orElseThrow(
                 () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
         );

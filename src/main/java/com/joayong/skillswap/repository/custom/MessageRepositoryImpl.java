@@ -3,7 +3,6 @@ package com.joayong.skillswap.repository.custom;
 import com.joayong.skillswap.domain.category.entity.QCategoryRegion;
 import com.joayong.skillswap.domain.category.entity.QCategoryTalent;
 import com.joayong.skillswap.domain.image.entity.QMessageImageUrl;
-import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.QMessage;
 import com.joayong.skillswap.domain.post.entity.QPost;
 import com.joayong.skillswap.domain.post.entity.QPostItem;
@@ -13,20 +12,63 @@ import com.joayong.skillswap.enums.PostStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class MessageRepositoryImpl implements MessageRepositoryCustom {
 
     private final JPAQueryFactory factory;
+
+
+    @Override
+    public long countMessages(MessageType messageType, PostStatus postStatus, String email, Pageable pageable) {
+        QMessage message = QMessage.message;
+        QPost post = QPost.post;
+        QPostItem postItem = QPostItem.postItem;
+        QCategoryTalent talentGive = QCategoryTalent.categoryTalent;
+        QCategoryTalent talentTake = QCategoryTalent.categoryTalent;
+        QUser sender = QUser.user;
+        QUser writer = QUser.user;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        // 보낸 메시지 필터링
+        if (messageType == MessageType.SEND || messageType == MessageType.ALL) {
+            builder.or(message.sender.eq(sender));
+        }
+
+        // 받은 메시지 필터링
+        if (messageType == MessageType.RECEIVE || messageType == MessageType.ALL) {
+            builder.or(message.post.writer.eq(writer));
+        }
+
+        // 상태 필터링 (N,M,D,C)
+        if (postStatus != null) {
+            builder.and(message.msgStatus.eq(postStatus));
+        }
+
+        // Count 쿼리 작성
+        long count = Optional.ofNullable(factory
+                        .select(message.count())
+                        .from(message)
+                        .join(post).on(post.id.eq(message.post.id))
+                        .join(postItem).on(postItem.post.id.eq(post.id))
+                        .join(talentGive).on(talentGive.eq(postItem.talentGId))
+                        .join(talentTake).on(talentTake.eq(postItem.talentTId))
+                        .join(sender).on(sender.eq(message.sender))
+                        .join(writer).on(writer.eq(post.writer))
+                        .where(builder)
+                        .fetchOne())
+                .orElse(0L);  // null일 경우 0L로 처리
+
+        return count;
+    }
 
     @Transactional
     @Override
@@ -86,7 +128,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
                 .where(builder)
                 .orderBy(message.sentAt.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
+                .limit(pageable.getPageSize())
                 .fetch();
 
         return fetch;

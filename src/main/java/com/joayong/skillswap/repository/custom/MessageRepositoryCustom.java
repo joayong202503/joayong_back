@@ -9,5 +9,8 @@ import java.util.List;
 
 public interface MessageRepositoryCustom {
 
+    // 조건별 갯수 구하는 쿼리
+    long countMessages(MessageType messageType, PostStatus postStatus, String email, Pageable pageable);
+
     public List<Tuple> getMessageList(String email, MessageType messageType, PostStatus postStatus, Pageable pageable) ;
 }

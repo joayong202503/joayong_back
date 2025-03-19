@@ -3,6 +3,7 @@ package com.joayong.skillswap.controller;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
+import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,7 +91,7 @@ public class MessageController {
     }
 
     @GetMapping("/paging")
-    public ResponseEntity<Page<MessageResponse>> getPagingMessage(
+    public ResponseEntity<PageResponse<MessageResponse>> getPagingMessage(
             @RequestParam String filter,
             @RequestParam String status,
             @RequestParam(defaultValue = "0") int page,
@@ -98,7 +99,7 @@ public class MessageController {
             @AuthenticationPrincipal String email
     ){
         Pageable pageable = PageRequest.of(page,size);
-        Page<MessageResponse> pagingMessage = messageService.findPagingMessage(email, filter, status, pageable);
+        PageResponse<MessageResponse> pagingMessage = messageService.findPagingMessage(email, filter, status, pageable);
 
         return ResponseEntity.ok().body(pagingMessage);
     }
