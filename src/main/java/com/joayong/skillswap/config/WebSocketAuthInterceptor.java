@@ -37,9 +37,9 @@ public class WebSocketAuthInterceptor implements ChannelInterceptor {
                 if (jwtTokenProvider.validateToken(token)) {
                     // 토큰에서 사용자 이름 가져오기
                     String email= jwtTokenProvider.getCurrentLoginUsername(token);
-                    String username = userRepository.findByEmail(email).get().getName();
+                    String userId = userRepository.findByEmail(email).get().getId();
                     // Spring Security의 Authentication 객체 생성
-                    UserDetails userDetails = new User(username, "", Collections.emptyList());
+                    UserDetails userDetails = new User(userId, "", Collections.emptyList());
                     Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
 
                     // WebSocket 세션에 사용자 인증 정보 저장
