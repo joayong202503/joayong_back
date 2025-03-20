@@ -40,6 +40,8 @@ public class MessageResponse {
 
 
         MessageResponse build = MessageResponse.builder()
+                .senderName(message.getSender().getName())
+                .receiverName(message.getPost().getWriter().getName())
                 .messageId(message.getId())
                 .postId(message.getPost().getId())
                 .talentGive(message.getPost().getPostItem().getTalentTId().getName())
