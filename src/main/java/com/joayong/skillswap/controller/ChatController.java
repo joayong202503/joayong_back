@@ -1,6 +1,7 @@
 package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.chat.dto.request.ChatRoomRequest;
+import com.joayong.skillswap.domain.chat.dto.response.ChatResponse;
 import com.joayong.skillswap.domain.chat.dto.response.ChatRoomResponse;
 import com.joayong.skillswap.domain.chat.entity.ChatMessage;
 import com.joayong.skillswap.domain.chat.entity.ChatRoom;
@@ -13,11 +14,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class ChatController {
@@ -44,5 +48,13 @@ public class ChatController {
         chatMessageRepository.save(message);
 
         return message;
+    }
+
+    @GetMapping("/chatrooms/{roomId}/history")
+    public ResponseEntity<List<ChatResponse>> getChatHistory(
+            @PathVariable Long roomId
+    ) {
+        List<ChatResponse> history = chatService.getChatHistory(roomId);
+        return ResponseEntity.ok(history);
     }
 }
