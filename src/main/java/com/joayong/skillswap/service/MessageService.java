@@ -304,6 +304,28 @@ public class MessageService {
         return true;
     }
 
+    public boolean completeMessage(String messageId, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
+        );
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+
+        Post post = message.getPost();
+
+        // 본인이 받은 메세지가 아닐 시 예외처리
+        if (post.getWriter() != user) {
+            throw new PostException(ErrorCode.NOT_MY_RECEIVED_MESSAGE);
+        }
+
+        // 메세지 상태 변경
+        message.setMsgStatus(MessageStatus.R);
+        messageRepository.save(message);
+
+        return true;
+    }
+
     public PageResponse<MessageResponse> findPagingMessage(String email, String filter, String status, Pageable pageable) {
 
         MessageType messageType = MessageType.valueOf(filter);
