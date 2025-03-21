@@ -5,6 +5,7 @@ import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.MessageStatus;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
@@ -43,7 +44,7 @@ class MessageServiceTest {
         User sender = userRepository.findByEmail("p@p.com").orElseThrow();
         //when
 //        List<Message> list = messageRepository.findBySenderIdAndMsgStatus("072c17ea-0a46-40df-b9e8-2aa41afb096e", PostStatus.N);
-        List<Message> list = messageRepository.findBySenderIdAndMsgStatus(sender.getId(), PostStatus.N);
+        List<Message> list = messageRepository.findBySenderIdAndMsgStatus(sender.getId(), MessageStatus.N);
 
         //then
         System.out.println("list = " + list);
@@ -100,7 +101,7 @@ class MessageServiceTest {
         User receiver = userRepository.findByEmail("p@p.com").orElseThrow();
 
         //when
-        List<Message> byPostWriter = messageRepository.findByPostWriterAndMsgStatus(receiver, PostStatus.C);
+        List<Message> byPostWriter = messageRepository.findByPostWriterAndMsgStatus(receiver, MessageStatus.C);
 
         //then
 
@@ -130,7 +131,7 @@ class MessageServiceTest {
         }
 
         // 메세지 상태 변경
-        message.setMsgStatus(PostStatus.M);
+        message.setMsgStatus(MessageStatus.M);
         messageRepository.save(message);
 
         // 게시글의 상태도 변경
@@ -147,7 +148,7 @@ class MessageServiceTest {
 
         Post post2 = message.getPost();
 
-        PostStatus msgStatus = message2.getMsgStatus();
+        MessageStatus msgStatus = message2.getMsgStatus();
         PostStatus status = post2.getStatus();
 
         int size = post2.getMatchList().size();

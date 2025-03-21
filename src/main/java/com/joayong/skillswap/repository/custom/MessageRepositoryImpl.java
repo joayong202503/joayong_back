@@ -7,6 +7,7 @@ import com.joayong.skillswap.domain.message.entity.QMessage;
 import com.joayong.skillswap.domain.post.entity.QPost;
 import com.joayong.skillswap.domain.post.entity.QPostItem;
 import com.joayong.skillswap.domain.user.entity.QUser;
+import com.joayong.skillswap.enums.MessageStatus;
 import com.joayong.skillswap.enums.MessageType;
 import com.joayong.skillswap.enums.PostStatus;
 import com.querydsl.core.BooleanBuilder;
@@ -27,7 +28,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
 
 
     @Override
-    public long countMessages(MessageType messageType, PostStatus postStatus, String email, Pageable pageable) {
+    public long countMessages(MessageType messageType, MessageStatus messageStatus, String email, Pageable pageable) {
         QMessage message = QMessage.message;
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
@@ -49,8 +50,8 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
         }
 
         // 상태 필터링 (N,M,D,C)
-        if (postStatus != null) {
-            builder.and(message.msgStatus.eq(postStatus));
+        if (messageStatus != null) {
+            builder.and(message.msgStatus.eq(messageStatus));
         }
 
         // Count 쿼리 작성
@@ -72,7 +73,7 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
 
     @Transactional
     @Override
-    public List<Tuple> getMessageList(String email, MessageType messageType, PostStatus postStatus, Pageable pageable) {
+    public List<Tuple> getMessageList(String email, MessageType messageType, MessageStatus messageStatus, Pageable pageable) {
 
         QMessage message = QMessage.message;
         QPost post = QPost.post;
@@ -97,8 +98,8 @@ public class MessageRepositoryImpl implements MessageRepositoryCustom {
         }
 
         // 상태 필터링 (N,M,D,C)
-        if (postStatus != null) {
-            builder.and(message.msgStatus.eq(postStatus));
+        if (messageStatus != null) {
+            builder.and(message.msgStatus.eq(messageStatus));
         }
 
         List<Tuple> fetch = factory.select(

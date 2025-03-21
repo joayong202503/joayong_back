@@ -10,6 +10,7 @@ import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.enums.MessageType;
+import com.joayong.skillswap.enums.MessageStatus;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
@@ -123,10 +124,10 @@ public class MessageService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
-        PostStatus postStatus = null;
+        MessageStatus messageStatus = null;
         MessageType messageType = MessageType.valueOf(filter);
         if (status != null) {
-            postStatus = PostStatus.valueOf(status);
+            messageStatus = MessageStatus.valueOf(status);
         }
 
         List<MessageResponse> messageList = new ArrayList<>();
@@ -142,7 +143,7 @@ public class MessageService {
                     ;
                     break;
                 }
-                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, true);
                         }).toList();
@@ -158,7 +159,7 @@ public class MessageService {
                     ;
                     break;
                 }
-                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                messageList = messageRepository.findByPostWriterAndMsgStatus(user, messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, false);
                         }).toList();
@@ -183,11 +184,11 @@ public class MessageService {
                     messageList = receiveMessageList;
                     break;
                 }
-                List<MessageResponse> sendMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                List<MessageResponse> sendMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, true);
                         }).toList());
-                List<MessageResponse> receiveMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                List<MessageResponse> receiveMessageList = messageRepository.findByPostWriterAndMsgStatus(user, messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, false);
                         }).toList();
@@ -238,8 +239,8 @@ public class MessageService {
 
         // 이미 메세지를 보내 수락대기중이거나 수락됬을 시엔 발송 불가
         for (Message message : senderMessageList) {
-            if (message.getMsgStatus() == PostStatus.N
-                || message.getMsgStatus() == PostStatus.M) {
+            if (message.getMsgStatus() == MessageStatus.N
+                || message.getMsgStatus() == MessageStatus.M) {
                 return false;
             }
         }
@@ -263,7 +264,7 @@ public class MessageService {
         }
 
         // 메세지 상태 변경
-        message.setMsgStatus(PostStatus.M);
+        message.setMsgStatus(MessageStatus.M);
         messageRepository.save(message);
 
         // 게시글의 상태도 변경
@@ -297,7 +298,7 @@ public class MessageService {
         }
 
         // 메세지 상태 변경
-        message.setMsgStatus(PostStatus.D);
+        message.setMsgStatus(MessageStatus.D);
         messageRepository.save(message);
 
         return true;
@@ -306,10 +307,10 @@ public class MessageService {
     public PageResponse<MessageResponse> findPagingMessage(String email, String filter, String status, Pageable pageable) {
 
         MessageType messageType = MessageType.valueOf(filter);
-        PostStatus postStatus = (status != null) ? PostStatus.valueOf(status) : null;
+        MessageStatus messageStatus = (status != null) ? MessageStatus.valueOf(status) : null;
 
         // 조건에 따른 전체 데이터 개수 조회
-        long totalCount = messageRepository.countMessages(messageType, postStatus, email, pageable);
+        long totalCount = messageRepository.countMessages(messageType, messageStatus, email, pageable);
 
         if (totalCount == 0) {
             return PageResponse.<MessageResponse>builder()
@@ -323,7 +324,7 @@ public class MessageService {
                     .build();
         }
 
-        List<Tuple> messageTupleList = messageRepository.getMessageList(email, messageType, postStatus, pageable);
+        List<Tuple> messageTupleList = messageRepository.getMessageList(email, messageType, messageStatus, pageable);
 
         List<MessageResponse> messageResponseList
                 = messageTupleList.stream().map(MessageResponse::toDtoPage).toList();

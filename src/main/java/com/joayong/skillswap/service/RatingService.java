@@ -12,6 +12,7 @@ import com.joayong.skillswap.domain.rating.entity.Rating;
 import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.dto.common.PageResponse;
+import com.joayong.skillswap.enums.MessageStatus;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
@@ -103,7 +104,7 @@ public class RatingService {
         rating.setTotalRating(total);
         ratingRepository.save(rating);
 
-        message.setMsgStatus(PostStatus.C);
+        message.setMsgStatus(MessageStatus.C);
         messageRepository.save(message);
 
         log.info("rating : {}", rating);
