@@ -43,10 +43,11 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
                 .join(user).on(ratingDetail.user.id.eq(user.id))
                 .where(rating.id.eq(ratingId))
                 .orderBy(ratingDetail.message.id.asc(), ratingDetail.reviewItem.id.asc())
-                .offset(pageable.getOffset())
+                .offset(pageable.getOffset()*5)
                 .limit(pageable.getPageSize()*5)
                 .fetch();
 
         return fetch;
+
     }
 }
