@@ -90,6 +90,17 @@ public class MessageController {
         );
     }
 
+    @PutMapping("/complete/{messageId}")
+    public ResponseEntity<Map<String,Boolean>>completeMessage(
+            @PathVariable String messageId,
+            @AuthenticationPrincipal String email
+    ){
+        boolean isCompleted = messageService.completeMessage(messageId, email);
+        return ResponseEntity.ok().body(
+                Map.of("isCompleted", isCompleted)
+        );
+    }
+
     @GetMapping("/paging")
     public ResponseEntity<PageResponse<MessageResponse>> getPagingMessage(
             @RequestParam String filter,
