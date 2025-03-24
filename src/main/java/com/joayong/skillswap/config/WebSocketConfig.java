@@ -1,6 +1,7 @@
 package com.joayong.skillswap.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,9 +12,8 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-
-    private final WebSocketAuthInterceptor webSocketAuthInterceptor;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
@@ -23,12 +23,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").withSockJS(); // WebSocket 엔드포인트
-    }
-
-    @Override
-    public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(webSocketAuthInterceptor); //  WebSocket 인증 인터셉터 추가
+        registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:5173")
+                .setAllowedOriginPatterns("*") // 추가: 와일드카드 패턴 허용
+                .withSockJS();
+        registry.addEndpoint("/ws-pure")
+                .setAllowedOrigins("http://localhost:5173")
+                .setAllowedOriginPatterns("*");
+        log.info("WebSocket endpoint /ws registered with SockJS");
     }
 
 }

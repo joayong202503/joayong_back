@@ -7,50 +7,39 @@ import com.joayong.skillswap.domain.chat.entity.ChatMessage;
 import com.joayong.skillswap.domain.chat.entity.ChatRoom;
 import com.joayong.skillswap.repository.ChatMessageRepository;
 import com.joayong.skillswap.service.ChatService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/api/joayong/chat")
+@Slf4j
+@RequiredArgsConstructor
 public class ChatController {
-    private ChatMessageRepository chatMessageRepository;
-    private ChatService chatService;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatService chatService;
 
     @PostMapping("/chatroom")
     public ResponseEntity<ChatRoomResponse> createChatRoom(
             @RequestBody ChatRoomRequest request
     ) {
-        ChatRoom chatRoom = chatService.createOrGetChatRoom(request.getUser1Id(), request.getUser2Id());
+        ChatRoom chatRoom = chatService.createOrGetChatRoom(request.getUser1Name(), request.getUser2Name());
         return ResponseEntity.ok(new ChatRoomResponse(chatRoom.getId(), chatRoom.getUser1Id(), chatRoom.getUser2Id()));
     }
 
-    @MessageMapping("/chat.send/{roomId}")
-    @SendTo("/topic/chat/{roomId}")
-    public ChatMessage sendMessage(@DestinationVariable Long roomId,
-                                   @Payload ChatMessage message,
-                                   Principal principal) {
-        // 메시지 저장
-        message.setChatRoomId(roomId);
-        message.setSenderId(principal.getName()); // 로그인된 유저 ID
-        message.setSentAt(LocalDateTime.now());
-        chatMessageRepository.save(message);
-
-        return message;
-    }
-
-    @GetMapping("/chatrooms/{roomId}/history")
+    @GetMapping("/chatroom/{roomId}/history")
     public ResponseEntity<List<ChatResponse>> getChatHistory(
             @PathVariable Long roomId
     ) {

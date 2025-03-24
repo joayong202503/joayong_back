@@ -19,7 +19,7 @@ public class ChatResponse {
     private String content;
     private LocalDateTime sentAt;
 
-    ChatResponse of(ChatMessage chatMessage){
+    public static ChatResponse of(ChatMessage chatMessage){
         return ChatResponse.builder()
                 .chatRoomId(chatMessage.getChatRoomId())
                 .senderId(chatMessage.getSenderId())

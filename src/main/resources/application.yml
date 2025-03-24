@@ -1,10 +1,8 @@
-
 server:
   port: 8999
 
 # database setting
 spring:
-
   mail:
     host: smtp.naver.com
     port: 465
@@ -18,11 +16,10 @@ spring:
           ssl:
             enable: true
 
-  #file upload setting
   servlet:
     multipart:
-      max-file-size: 10MB   #업로드 파일 1개 최대용량 (대문자로 써야함)
-      max-request-size: 100MB   #한번에 업로드랗 수 있는 파일의 총 용량 (대문자로 써야함)
+      max-file-size: 10MB
+      max-request-size: 100MB
 
   datasource:
     url: jdbc:mariadb://localhost:3306/joayong
@@ -31,32 +28,38 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
-    # DBMS dialect setting
-    #    show-sql: true
     database-platform: org.hibernate.dialect.MariaDB106Dialect
     hibernate:
-      # ddl
       ddl-auto: none
     properties:
       hibernate:
-        format_sql: true # SQL log
+        format_sql: true
         use_sql_comments: true
-        type: trace
-    database: mysql
+        show_sql: true  # SQL 쿼리 출력 활성화
+        type: trace     # 이미 TRACE로 설정됨, 유지
 
 # log level setting
 logging:
+  file:
+    name: logs/application.log
   level:
+    org.springframework.web.socket: TRACE
+    org.springframework.messaging: TRACE
     root: info
     com:
       joayong:
-        skillswap: debug
+        skillswap: debug  # 필요 시 trace로 변경 가능
     org:
       hibernate:
-        SQL: info
+        SQL: debug      # SQL 쿼리 출력
+        type: trace     # 바인딩 파라미터까지 출력
+      springframework:
+        web:
+          socket: trace  # WebSocket 상세 디버깅
+        messaging: trace # STOMP 메시지 디버깅
+      stompjms: trace     # STOMP 프로토콜 디버깅 (SockJS/STOMP 관련)
 
-#  custom setting - file
-#  사용자가 올린 파일의 저장 경로
+# file upload setting
 file:
   upload:
     location: ${user.home}/fish/uploads/
