@@ -18,6 +18,8 @@ public class UserProfileResponse {
     private String name;
     private String profileImageUrl;
     private double totalRating;
+    private String talentG;
+    private String talentT;
 
     public static UserProfileResponse of(User user, Rating rating){
         return UserProfileResponse.builder()
