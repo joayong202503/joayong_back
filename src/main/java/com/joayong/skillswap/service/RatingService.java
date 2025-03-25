@@ -10,6 +10,7 @@ import com.joayong.skillswap.domain.rating.dto.response.RatingResponse;
 import com.joayong.skillswap.domain.rating.dto.response.ReviewResponse;
 import com.joayong.skillswap.domain.rating.entity.Rating;
 import com.joayong.skillswap.domain.rating.entity.RatingDetail;
+import com.joayong.skillswap.domain.room.entity.RtcRoom;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.enums.MessageStatus;
@@ -41,6 +42,8 @@ public class RatingService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final MessageRepository messageRepository;
+
+    private final RtcRoomRepository rtcRoomRepository;
 
     public double addRating(String email, RatingRequest dto) {
 
@@ -106,6 +109,14 @@ public class RatingService {
 
         message.setMsgStatus(MessageStatus.C);
         messageRepository.save(message);
+
+        // rtc 방 빼기 (강의 완료 후 방 빼고 있지만 나중엔 해당 방 사용안하면 없앨 예정)
+        RtcRoom rtcRoom = rtcRoomRepository.findByIsAvailable(message.getId()).orElse(null);
+
+        if(rtcRoom != null){
+            rtcRoom.setIsAvailable(null);
+            rtcRoomRepository.save(rtcRoom);
+        }
 
         log.info("rating : {}", rating);
         log.info("ratingDetailList : {}", ratingDetailList);
