@@ -254,7 +254,7 @@ public class RatingService {
                         .postId(tuple.get(5, String.class))
                         .messageId(tuple.get(6, String.class))
                         .reviewer(tuple.get(7, String.class))
-                        .reviewerProfileUrl(tuple.get(7,String.class))
+                        .reviewerProfileUrl(tuple.get(8,String.class))
                         .createAt(tuple.get(9, LocalDateTime.class))
                         .reviewList(new ArrayList<>())
                         .build();
