@@ -165,4 +165,15 @@ public class UserService {
 
         return uploadPath;
     }
+
+    public User updateTalent(String email,Long talentGId, Long talentTId){
+        long updated = userRepository.updateTalent(email,talentGId,talentTId);
+        if(updated==0){
+            throw new RuntimeException("talent update failed");
+        }
+        User founduser = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserException((ErrorCode.USER_NOT_FOUND))
+                );
+        return founduser;
+    }
 }

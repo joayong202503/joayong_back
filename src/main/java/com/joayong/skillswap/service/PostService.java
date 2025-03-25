@@ -101,21 +101,24 @@ public class PostService {
 
         postRepository.updatePost(founduser.getId(),request);
 
-        AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
+        if(request.getUpdateImage()){
+            AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
 
-        PostResponse post = postRepository.findPostById(request.getPostId());
-        Optional<PostItem> postItem = postItemRepository.findById(post.getPostItemId());
-        images.stream()
-                .filter(image -> image != null && !image.isEmpty())
-                .forEach(image -> {
-                    String uploadPath = fileUploadUtil.saveFile(image);
-                    PostImageUrl url = PostImageUrl.builder()
-                            .postItem(postItem.get())
-                            .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
-                            .imageUrl(uploadPath)
-                            .build();
-                    postImageUrlRepository.save(url);
-                });
+            PostResponse post = postRepository.findPostById(request.getPostId());
+            Optional<PostItem> postItem = postItemRepository.findById(post.getPostItemId());
+            images.stream()
+                    .filter(image -> image != null && !image.isEmpty())
+                    .forEach(image -> {
+                        String uploadPath = fileUploadUtil.saveFile(image);
+                        PostImageUrl url = PostImageUrl.builder()
+                                .postItem(postItem.get())
+                                .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
+                                .imageUrl(uploadPath)
+                                .build();
+                        postImageUrlRepository.save(url);
+                    });
+        }
+
     }
 
     //게시글 전체 조회

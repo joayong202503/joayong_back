@@ -38,7 +38,9 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
                         user.email,
                         user.name,
                         user.profileUrl,
-                        rating.totalRating.coalesce(0.0)
+                        rating.totalRating.coalesce(0.0),
+                        user.talentGId,
+                        user.talentTId
                         ))
                 .from(user)
                 .leftJoin(user.rating,rating)
@@ -52,6 +54,16 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
         return queryFactory
                 .update(user)
                 .set(user.name,newName)
+                .where(user.email.eq(email))
+                .execute();
+    }
+    @Override
+    public long updateTalent(String email, Long talentGId,Long talnetTId){
+        QUser user = QUser.user;
+        return queryFactory
+                .update(user)
+                .set(user.talentGId,talentGId)
+                .set(user.talentTId,talnetTId)
                 .where(user.email.eq(email))
                 .execute();
     }

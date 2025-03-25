@@ -1,5 +1,6 @@
 package com.joayong.skillswap.controller;
 
+import com.joayong.skillswap.domain.user.dto.request.UpdateTalentRequest;
 import com.joayong.skillswap.domain.user.dto.response.UserProfileResponse;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.exception.ErrorCode;
@@ -71,6 +72,14 @@ public class UserController {
                 "imageUrl", imageUrl,
                 "message", "프로필 이미지 업로드 성공"
         ));
+    }
+    @PutMapping("update/talent")
+    public ResponseEntity<UserProfileResponse> updateTalent(
+            @AuthenticationPrincipal String email,
+            @RequestBody UpdateTalentRequest request
+    ){
+        User founduser = userService.updateTalent(email,request.getTalentGId(),request.getTalentTId());
+        return ResponseEntity.ok().body(UserProfileResponse.of(founduser,founduser.getRating()));
     }
 
 }
