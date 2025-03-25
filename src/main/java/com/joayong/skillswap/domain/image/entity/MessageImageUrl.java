@@ -1,6 +1,7 @@
 package com.joayong.skillswap.domain.image.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.joayong.skillswap.domain.message.dto.response.MessageUrlResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.PostItem;
 import jakarta.persistence.*;
@@ -26,12 +27,19 @@ public class MessageImageUrl {
     @Column(name = "sequence")
     private int sequence;
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "message_item_id")
     private Message message;
 
     @Column(name = "image_url", nullable = false, length = 255)
     private String imageUrl;
+
+    public static MessageUrlResponse toDto(MessageImageUrl messageImageUrl){
+        return MessageUrlResponse.builder()
+                .id(messageImageUrl.getId())
+                .sequence(messageImageUrl.getSequence())
+                .imageUrl(messageImageUrl.getImageUrl())
+                .build();
+    }
 
 }

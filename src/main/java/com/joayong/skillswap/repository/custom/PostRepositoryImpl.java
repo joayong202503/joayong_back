@@ -305,31 +305,39 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QUser user = QUser.user;
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
         //업데이트전 내용
+        // 업데이트 전 내용 조회
         Post original = queryFactory
                 .selectFrom(post)
                 .where(post.writer.id.eq(id))
                 .where(post.id.eq(request.getPostId()))
                 .fetchOne();
-        //post 수정
+
+        // post 수정
         queryFactory
                 .update(post)
-                .set(post.updatedAt,LocalDateTime.now())
+                .set(post.updatedAt, LocalDateTime.now())
                 .where(post.writer.id.eq(id))
                 .where(post.id.eq(request.getPostId()))
                 .execute();
+
+        // postItem 수정
         queryFactory
                 .update(postItem)
-                .set(postItem.title,request.getTitle())
-                .set(postItem.content,request.getContent())
-                .set(postItem.regionId.id,request.getRegionId())
-                .set(postItem.talentGId.id,request.getTalentGId())
-                .set(postItem.talentTId.id,request.getTalentTId())
+                .set(postItem.title, request.getTitle())
+                .set(postItem.content, request.getContent())
+                .set(postItem.regionId.id, request.getRegionId())
+                .set(postItem.talentGId.id, request.getTalentGId())
+                .set(postItem.talentTId.id, request.getTalentTId())
                 .where(postItem.post.id.eq(original.getId()))
                 .execute();
-        queryFactory
-                .delete(postImageUrl)
-                .where(postImageUrl.postItem.id.eq(original.getPostItem().getId()))
-                .execute();
+
+        // request.imageUpdate가 true일 때만 이미지 URL 삭제
+        if (request.getUpdateImage()) {
+            queryFactory
+                    .delete(postImageUrl)
+                    .where(postImageUrl.postItem.id.eq(original.getPostItem().getId()))
+                    .execute();
+        }
 
     }
 

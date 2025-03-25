@@ -4,6 +4,7 @@ import com.joayong.skillswap.domain.rating.entity.Rating;
 import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -17,4 +18,7 @@ public interface RatingDetailRepository extends JpaRepository<RatingDetail,Strin
     List<String> findDistinctMessageIds();
 
     List<RatingDetail> findByPostId(String postId);
+
+    @Query(value = "SELECT COUNT(DISTINCT message_id) FROM rating_detail_tb WHERE rating_id = :ratingId", nativeQuery = true)
+    long countDistinctMessageIdsByRatingId(@Param("ratingId") String ratingId);
 }
