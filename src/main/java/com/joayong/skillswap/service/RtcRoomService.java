@@ -21,7 +21,7 @@ public class RtcRoomService {
         RtcRoom rtcRoom = rtcRoomRepository.findByIsAvailable(messageId).orElse(null);
 
         if (rtcRoom == null) {
-            RtcRoom newRoom = rtcRoomRepository.findFirstByIsAvailableFalseOrderByRoomId().orElseThrow(
+            RtcRoom newRoom = rtcRoomRepository.findFirstByIsAvailableIsNull().orElseThrow(
                     () -> new PostException(ErrorCode.NO_EMPTY_ROOM)
             );
 

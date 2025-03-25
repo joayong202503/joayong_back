@@ -20,5 +20,6 @@ public class RtcRoom {
     private Integer roomId; // 방 번호
 
     @Column(name = "isAvailable")
-    private String isAvailable = null; // true: 사용 중, false: 사용 가능
+    @Builder.Default
+    private String isAvailable = null;
 }
