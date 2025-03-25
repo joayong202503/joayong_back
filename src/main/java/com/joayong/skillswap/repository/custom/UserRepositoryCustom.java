@@ -12,4 +12,6 @@ public interface UserRepositoryCustom{
     long updateName(String email, String newName);
 
     UserProfileResponse getUserProfile(String name);
+
+    long updateTalent(String email,Long talentGId, Long talentTId);
 }
