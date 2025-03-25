@@ -35,16 +35,12 @@ spring:
       hibernate:
         format_sql: true
         use_sql_comments: true
-        show_sql: true  # SQL 쿼리 출력 활성화
-        type: trace     # 이미 TRACE로 설정됨, 유지
+        show_sql: true 
+        type: trace
 
 # log level setting
 logging:
-  file:
-    name: logs/application.log
   level:
-    org.springframework.web.socket: TRACE
-    org.springframework.messaging: TRACE
     root: info
     com:
       joayong:
