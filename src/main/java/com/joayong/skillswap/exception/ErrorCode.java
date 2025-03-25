@@ -43,6 +43,9 @@ public enum ErrorCode {
     ALREADY_SENT_MESSAGE(HttpStatus.BAD_REQUEST, "이미 보낸 메시지가 있습니다."),
     NOT_MY_RECEIVED_MESSAGE(HttpStatus.BAD_REQUEST, "내가 받은 메시지가 아닙니다."),
 
+    // 방 번호
+    NO_EMPTY_ROOM(HttpStatus.BAD_REQUEST, "비어있는 방이 없습니다."),
+
     // 등록실패 오류
     FAIL_TO_RESISTER(HttpStatus.BAD_REQUEST,"등록에 실패했습니다."),
     ;

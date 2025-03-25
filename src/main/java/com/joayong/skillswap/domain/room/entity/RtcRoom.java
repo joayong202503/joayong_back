@@ -6,7 +6,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -18,6 +19,6 @@ public class RtcRoom {
     @Id
     private Integer roomId; // 방 번호
 
-    @Column(name = "isAvailable", nullable = false)
-    private  final Boolean isAvailable = false; // true: 사용 중, false: 사용 가능
+    @Column(name = "isAvailable")
+    private String isAvailable = null; // true: 사용 중, false: 사용 가능
 }
