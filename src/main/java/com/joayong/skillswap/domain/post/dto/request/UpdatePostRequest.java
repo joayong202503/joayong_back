@@ -24,4 +24,6 @@ public class UpdatePostRequest {
     private Long talentTId;
     @JsonProperty("region-id")
     private Long regionId;
+    @JsonProperty("update-image")
+    private Boolean updateImage;
 }
