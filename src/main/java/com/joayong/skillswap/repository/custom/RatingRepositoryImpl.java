@@ -9,9 +9,11 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class RatingRepositoryImpl implements RatingRepositoryCustom {
 
@@ -35,7 +37,8 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
                         ratingDetail.post.id,       //5
                         ratingDetail.message.id,    //6
                         user.name,                  //7
-                        ratingDetail.createdAt      //8
+                        user.profileUrl,            //8
+                        ratingDetail.createdAt      //9
                 )
                 .from(rating)
                 .leftJoin(ratingDetail).on(rating.id.eq(ratingDetail.rating.id))
@@ -46,6 +49,8 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
                 .offset(pageable.getOffset()*5)
                 .limit(pageable.getPageSize()*5)
                 .fetch();
+
+        log.info("fetch : {}",fetch);
 
         return fetch;
 
