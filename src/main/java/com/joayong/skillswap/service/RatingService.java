@@ -174,6 +174,7 @@ public class RatingService {
                             .postId(message.getPost().getId())
                             .messageId(messageId)
                             .createAt(reviewerByMessage.get(messageId).getCreatedAt())
+                            .reviewerProfileUrl(reviewerByMessage.get(messageId).getProfileUrl())
                             .reviewer(reviewerByMessage.get(messageId).getName()) // reviewer 추가
                             .reviewList(groupedReviews.getOrDefault(messageId, List.of())
                                     .stream()
@@ -231,7 +232,8 @@ public class RatingService {
 //                        ratingDetail.post.id,       //5
 //                        ratingDetail.message.id,    //6
 //                        user.name,                  //7
-//                        ratingDetail.createdAt      //8
+//                        user.profileUrl             //8
+//                        ratingDetail.createdAt      //9
 
             String messageId = tuple.get(6, String.class);
 
@@ -252,7 +254,8 @@ public class RatingService {
                         .postId(tuple.get(5, String.class))
                         .messageId(tuple.get(6, String.class))
                         .reviewer(tuple.get(7, String.class))
-                        .createAt(tuple.get(8, LocalDateTime.class))
+                        .reviewerProfileUrl(tuple.get(7,String.class))
+                        .createAt(tuple.get(9, LocalDateTime.class))
                         .reviewList(new ArrayList<>())
                         .build();
 
