@@ -45,6 +45,7 @@ public enum ErrorCode {
 
     // 방 번호
     NO_EMPTY_ROOM(HttpStatus.BAD_REQUEST, "비어있는 방이 없습니다."),
+    NOT_FOUND_ROOM(HttpStatus.BAD_REQUEST, "배정된 방이 없습니다."),
 
     // 등록실패 오류
     FAIL_TO_RESISTER(HttpStatus.BAD_REQUEST,"등록에 실패했습니다."),
