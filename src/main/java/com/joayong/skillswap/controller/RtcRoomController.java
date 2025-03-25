@@ -17,14 +17,14 @@ public class RtcRoomController {
 
     private final RtcRoomService rtcRoomService;
 
-    @GetMapping
+    @GetMapping("/{messageId}")
     public ResponseEntity<?> getRtcRoomCode(
             @PathVariable String messageId ,
             @AuthenticationPrincipal String email
     ){
 
-        rtcRoomService.getRtcRoomCode(messageId,email);
+        int rtcRoomCode = rtcRoomService.getRtcRoomCode(messageId, email);
 
-        return ResponseEntity.ok().body(null);
+        return ResponseEntity.ok().body(rtcRoomCode);
     }
 }
