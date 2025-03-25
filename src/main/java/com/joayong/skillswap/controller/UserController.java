@@ -33,7 +33,7 @@ public class UserController {
                 "id",founduser.getId(),
                 "email",founduser.getEmail(),
                 "name",founduser.getName(),
-                "profileImageUrl",founduser.getProfileUrl(),
+                "profileImageUrl",founduser.getProfileUrl()==null?"":founduser.getProfileUrl(),
                 "created_at",founduser.getCreatedAt()
         ));
     }
