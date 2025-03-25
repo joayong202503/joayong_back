@@ -16,6 +16,7 @@ public class RatingDetailResponse {
     private String postId;
     private String messageId;
     private String reviewer;
+    private String reviewerProfileUrl;
     private LocalDateTime createAt;
     private List<ReviewResponse> reviewList;
 }
