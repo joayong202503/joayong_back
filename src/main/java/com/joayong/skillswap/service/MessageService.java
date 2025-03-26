@@ -3,18 +3,25 @@ package com.joayong.skillswap.service;
 import com.joayong.skillswap.domain.image.entity.MessageImageUrl;
 import com.joayong.skillswap.domain.match.entity.Match;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
+import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.enums.MessageType;
+import com.joayong.skillswap.enums.MessageStatus;
 import com.joayong.skillswap.enums.PostStatus;
 import com.joayong.skillswap.exception.ErrorCode;
 import com.joayong.skillswap.exception.PostException;
 import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,10 +124,10 @@ public class MessageService {
         User user = userRepository.findByEmail(email).orElseThrow(
                 () -> new PostException(ErrorCode.USER_NOT_FOUND)
         );
-        PostStatus postStatus = null;
+        MessageStatus messageStatus = null;
         MessageType messageType = MessageType.valueOf(filter);
         if (status != null) {
-            postStatus = PostStatus.valueOf(status);
+            messageStatus = MessageStatus.valueOf(status);
         }
 
         List<MessageResponse> messageList = new ArrayList<>();
@@ -136,7 +143,7 @@ public class MessageService {
                     ;
                     break;
                 }
-                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                messageList = messageRepository.findBySenderIdAndMsgStatus(user.getId(), messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, true);
                         }).toList();
@@ -152,7 +159,7 @@ public class MessageService {
                     ;
                     break;
                 }
-                messageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                messageList = messageRepository.findByPostWriterAndMsgStatus(user, messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, false);
                         }).toList();
@@ -177,11 +184,11 @@ public class MessageService {
                     messageList = receiveMessageList;
                     break;
                 }
-                List<MessageResponse> sendMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), postStatus)
+                List<MessageResponse> sendMessageList = new ArrayList<>(messageRepository.findBySenderIdAndMsgStatus(user.getId(), messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, true);
                         }).toList());
-                List<MessageResponse> receiveMessageList = messageRepository.findByPostWriterAndMsgStatus(user, postStatus)
+                List<MessageResponse> receiveMessageList = messageRepository.findByPostWriterAndMsgStatus(user, messageStatus)
                         .stream().map(message -> {
                             return MessageResponse.toDto(message, false);
                         }).toList();
@@ -232,8 +239,8 @@ public class MessageService {
 
         // 이미 메세지를 보내 수락대기중이거나 수락됬을 시엔 발송 불가
         for (Message message : senderMessageList) {
-            if (message.getMsgStatus() == PostStatus.N
-                || message.getMsgStatus() == PostStatus.M) {
+            if (message.getMsgStatus() == MessageStatus.N
+                || message.getMsgStatus() == MessageStatus.M) {
                 return false;
             }
         }
@@ -257,7 +264,7 @@ public class MessageService {
         }
 
         // 메세지 상태 변경
-        message.setMsgStatus(PostStatus.M);
+        message.setMsgStatus(MessageStatus.M);
         messageRepository.save(message);
 
         // 게시글의 상태도 변경
@@ -291,9 +298,79 @@ public class MessageService {
         }
 
         // 메세지 상태 변경
-        message.setMsgStatus(PostStatus.D);
+        message.setMsgStatus(MessageStatus.D);
         messageRepository.save(message);
 
         return true;
     }
+
+    public boolean completeMessage(String messageId, String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                () -> new PostException(ErrorCode.USER_NOT_FOUND)
+        );
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+
+        Post post = message.getPost();
+
+        // 메세지 상태 변경
+        message.setMsgStatus(MessageStatus.R);
+        messageRepository.save(message);
+
+        return true;
+    }
+
+    public PageResponse<MessageResponse> findPagingMessage(String email, String filter, String status, Pageable pageable) {
+
+        MessageType messageType = MessageType.valueOf(filter);
+        MessageStatus messageStatus = (status != null) ? MessageStatus.valueOf(status) : null;
+
+        // 조건에 따른 전체 데이터 개수 조회
+        long totalCount = messageRepository.countMessages(messageType, messageStatus, email, pageable);
+
+        if (totalCount == 0) {
+            return PageResponse.<MessageResponse>builder()
+                    .totalCount(0)
+                    .totalPages(0)
+                    .currentPage(pageable.getPageNumber() + 1) // 클라이언트에선 1페이지가 첫페이지니까 더해줌
+                    .hasNext(false)
+                    .hasPrevious(false)
+                    .pageSize(pageable.getPageSize())
+                    .data(Collections.emptyList()) // 빈 리스트 반환
+                    .build();
+        }
+
+        List<Tuple> messageTupleList = messageRepository.getMessageList(email, messageType, messageStatus, pageable);
+
+        List<MessageResponse> messageResponseList
+                = messageTupleList.stream().map(MessageResponse::toDtoPage).toList();
+
+        // 페이지네이션 계산
+        int totalPages = (int) Math.ceil((double) totalCount / pageable.getPageSize());
+        boolean hasNext = pageable.getPageNumber() < totalPages - 1;
+        boolean hasPrevious = pageable.getPageNumber() > 0;
+
+        // 제너릭 타입 T를 MessageResponse로 지정하고, build() 메서드를 호출하여 객체를 반환
+        return PageResponse.<MessageResponse>builder()
+                .totalCount(totalCount)
+                .totalPages(totalPages)
+                .currentPage(pageable.getPageNumber() + 1) // 클라이언트에선 1페이지가 첫페이지니까 더해줌
+                .hasNext(hasNext)
+                .hasPrevious(hasPrevious)
+                .pageSize(pageable.getPageSize())
+                .data(messageResponseList)
+                .build();
+
+    }
+
+
+    // 메세지 이미지 조회 서비스
+    public MessageDetailResponse getMessageUrlList(String messageId) {
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+        return MessageDetailResponse.toDto(message);
+    }
+
 }

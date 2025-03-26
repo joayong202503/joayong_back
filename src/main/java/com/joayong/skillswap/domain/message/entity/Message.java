@@ -5,6 +5,7 @@ import com.joayong.skillswap.domain.image.entity.PostImageUrl;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.rating.entity.RatingDetail;
 import com.joayong.skillswap.domain.user.entity.User;
+import com.joayong.skillswap.enums.MessageStatus;
 import com.joayong.skillswap.enums.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,7 +44,7 @@ public class Message {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "msg_status", nullable = false, columnDefinition = "VARCHAR(10)")
-    private PostStatus msgStatus = PostStatus.N;
+    private MessageStatus msgStatus = MessageStatus.N;
 
     @Column(name = "sent_at", nullable = false, updatable = false)
     @CreationTimestamp

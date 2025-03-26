@@ -15,6 +15,7 @@ import com.joayong.skillswap.exception.UserException;
 import com.joayong.skillswap.repository.*;
 import com.joayong.skillswap.util.FileUploadUtil;
 import com.p6spy.engine.logging.Category;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -101,27 +102,33 @@ public class PostService {
 
         postRepository.updatePost(founduser.getId(),request);
 
-        AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
+        if(request.getUpdateImage()){
+            if(images == null){
+                return;
+            }
+            AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
 
-        PostResponse post = postRepository.findPostById(request.getPostId());
-        Optional<PostItem> postItem = postItemRepository.findById(post.getPostItemId());
-        images.stream()
-                .filter(image -> image != null && !image.isEmpty())
-                .forEach(image -> {
-                    String uploadPath = fileUploadUtil.saveFile(image);
-                    PostImageUrl url = PostImageUrl.builder()
-                            .postItem(postItem.get())
-                            .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
-                            .imageUrl(uploadPath)
-                            .build();
-                    postImageUrlRepository.save(url);
-                });
+            PostResponse post = postRepository.findPostById(request.getPostId());
+            Optional<PostItem> postItem = postItemRepository.findById(post.getPostItemId());
+            images.stream()
+                    .filter(image -> image != null && !image.isEmpty())
+                    .forEach(image -> {
+                        String uploadPath = fileUploadUtil.saveFile(image);
+                        PostImageUrl url = PostImageUrl.builder()
+                                .postItem(postItem.get())
+                                .sequence(index.getAndIncrement()) // 현재 인덱스를 가져오고 1 증가
+                                .imageUrl(uploadPath)
+                                .build();
+                        postImageUrlRepository.save(url);
+                    });
+        }
+
     }
 
     //게시글 전체 조회
     @Transactional(readOnly = true)
     public Map<String,Object> findPosts(Pageable pageable) {
-        Slice<PostResponse> posts = postRepository.findPosts(pageable);
+        Page<PostResponse> posts = postRepository.findPosts(pageable);
         if(posts.isEmpty()||posts==null){
             throw new PostException(ErrorCode.NOT_FOUND_POST);
         }
@@ -188,7 +195,7 @@ public class PostService {
     }
 
     public Map<String,Object> searchByOption(String keyword,Pageable pageable) {
-        Slice<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
+        Page<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
 
         if(posts.isEmpty()) throw new PostException(ErrorCode.SEARCH_NOT_FOUND);
         return Map.of(

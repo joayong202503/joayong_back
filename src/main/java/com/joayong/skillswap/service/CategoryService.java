@@ -7,6 +7,7 @@ import com.joayong.skillswap.repository.CategoryTalentRepository;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class CategoryService {
     private final CategoryRegionRepository regionRepository;
     private final CategoryTalentRepository talentRepository;
 
+    @Cacheable(value = "categories")
     public CategoryResponse getCategories() {
 
         List<MainTalentDto> talentCategoryList = getTalentCategoryList();

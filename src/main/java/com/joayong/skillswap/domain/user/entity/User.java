@@ -62,6 +62,12 @@ public class User {
     @Column(name = "profile_url", length = 500)
     private String profileUrl;
 
+    @Column(name = "talent-g-id")
+    private Long talentGId;
+
+    @Column(name = "talent-t-id")
+    private Long talentTId;
+
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Talent> talents = new ArrayList<>();
