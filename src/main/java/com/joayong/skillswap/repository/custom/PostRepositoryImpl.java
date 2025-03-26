@@ -25,8 +25,9 @@ import java.util.List;
 public class PostRepositoryImpl implements PostRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
+    //전체조회로 페이지 반환
     @Override
-    public Slice<PostResponse> findPosts(Pageable pageable) {
+    public Page<PostResponse> findPosts(Pageable pageable) {
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
@@ -35,7 +36,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
-        // 메인 쿼리 (Post와 PostItem, User만 조인)
         List<PostResponse> posts = queryFactory
                 .select(Projections.fields(PostResponse.class,
                         post.id,
@@ -64,10 +64,15 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .join(postItem.talentGId, talentG)
                 .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1) // **더보기 방식 지원을 위해 +1 조회**
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        // PostItem과 PostImageUrl을 매핑하여 이미지 리스트 설정
+        long total = queryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.deletedAt.isNull())
+                .fetchOne();
+
         posts.forEach(postResponse -> {
             List<PostImageUrlResponse> images = queryFactory
                     .select(Projections.constructor(PostImageUrlResponse.class,
@@ -82,14 +87,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
             postResponse.setImages(images);
         });
 
-        // **Slice 처리를 위해 마지막 데이터가 있는지 확인**
-        boolean hasNext = false;
-        if (posts.size() > pageable.getPageSize()) {
-            posts.remove(pageable.getPageSize());
-            hasNext = true;
-        }
-
-        return new SliceImpl<>(posts, pageable, hasNext);
+        return new PageImpl<>(posts, pageable, total);
     }
 
     //단일 게시물 id로 조회
@@ -342,7 +340,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
     }
 
     @Override
-    public Slice<PostResponse> searchPosts(String keyword, Pageable pageable) {
+    public Page<PostResponse> searchPosts(String keyword, Pageable pageable) {
         QPost post = QPost.post;
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
@@ -351,7 +349,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
-        // 키워드 검색 조건
+        // ✅ 키워드 검색 조건
         BooleanExpression keywordPredicate = (keyword == null || keyword.trim().isEmpty())
                 ? null
                 : postItem.title.containsIgnoreCase(keyword)
@@ -361,7 +359,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .or(talentT.name.containsIgnoreCase(keyword))
                 .or(talentG.name.containsIgnoreCase(keyword));
 
-        // 메인 쿼리
+        // ✅ 데이터 조회
         List<PostResponse> posts = queryFactory
                 .select(Projections.fields(PostResponse.class,
                         post.id.stringValue(),
@@ -391,10 +389,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         .and(keywordPredicate))
                 .orderBy(post.createdAt.desc())
                 .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
+                .limit(pageable.getPageSize())
                 .fetch();
 
-        // 이미지 추가
+        // ✅ 전체 개수 조회 (totalCount)
+        long total = queryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.deletedAt.isNull()
+                        .and(keywordPredicate))
+                .fetchOne();
+
+        // ✅ PostItem과 PostImageUrl을 매핑하여 이미지 리스트 설정
         posts.forEach(postResponse -> {
             List<PostImageUrlResponse> images = queryFactory
                     .select(Projections.constructor(PostImageUrlResponse.class,
@@ -408,12 +414,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                     .fetch();
             postResponse.setImages(images);
         });
-        boolean hasNext = false;
-        if (posts.size() > pageable.getPageSize()) {
-            posts.remove(pageable.getPageSize());
-            hasNext = true;
-        }
 
-        return new SliceImpl<>(posts, pageable, hasNext);
+        // ✅ Page 객체 반환 (totalPages 자동 계산됨)
+        return new PageImpl<>(posts, pageable, total);
     }
 }

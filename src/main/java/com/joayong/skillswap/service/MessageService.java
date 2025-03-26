@@ -314,11 +314,6 @@ public class MessageService {
 
         Post post = message.getPost();
 
-        // 본인이 받은 메세지가 아닐 시 예외처리
-        if (post.getWriter() != user) {
-            throw new PostException(ErrorCode.NOT_MY_RECEIVED_MESSAGE);
-        }
-
         // 메세지 상태 변경
         message.setMsgStatus(MessageStatus.R);
         messageRepository.save(message);

@@ -4,6 +4,7 @@ import com.joayong.skillswap.domain.post.dto.request.PostCreateRequest;
 import com.joayong.skillswap.domain.post.dto.request.UpdatePostRequest;
 import com.joayong.skillswap.domain.post.dto.response.PostResponse;
 import com.joayong.skillswap.domain.post.entity.Post;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 
 
 public interface PostRepositoryCustom {
-    Slice<PostResponse> findPosts(Pageable pageable);
+    Page<PostResponse> findPosts(Pageable pageable);
 
     PostResponse findPostById(String id);
 
@@ -28,5 +29,5 @@ public interface PostRepositoryCustom {
 
     void updatePost(String id, UpdatePostRequest request);
 
-    Slice<PostResponse> searchPosts(String keyword,Pageable pageable);
+    Page<PostResponse> searchPosts(String keyword,Pageable pageable);
 }
