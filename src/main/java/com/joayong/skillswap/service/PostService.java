@@ -103,7 +103,7 @@ public class PostService {
         postRepository.updatePost(founduser.getId(),request);
 
         if(request.getUpdateImage()){
-            if(images.isEmpty()||images==null){
+            if(images == null){
                 return;
             }
             AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
