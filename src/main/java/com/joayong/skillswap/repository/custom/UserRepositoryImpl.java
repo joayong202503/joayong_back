@@ -35,6 +35,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
 
         return queryFactory
                 .select(Projections.constructor(UserProfileResponse.class,
+                        user.id,
                         user.email,
                         user.name,
                         user.profileUrl,

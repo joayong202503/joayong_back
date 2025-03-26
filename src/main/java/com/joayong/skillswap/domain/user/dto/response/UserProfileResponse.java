@@ -15,6 +15,7 @@ import java.util.List;
 @EqualsAndHashCode
 @Builder
 public class UserProfileResponse {
+    private String id;
     private String email;
     private String name;
     private String profileImageUrl;
