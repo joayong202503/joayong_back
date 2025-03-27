@@ -347,6 +347,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QCategoryRegion region = QCategoryRegion.categoryRegion;
         QCategoryTalent talentT = new QCategoryTalent("talentT");
         QCategoryTalent talentG = new QCategoryTalent("talentG");
+        QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // ✅ 키워드 검색 조건
         BooleanExpression keywordPredicate = (keyword == null || keyword.trim().isEmpty())
@@ -403,6 +404,20 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(post.deletedAt.isNull()
                         .and(keywordPredicate))
                 .fetchOne();
+
+        posts.forEach(postResponse -> {
+            List<PostImageUrlResponse> images = queryFactory
+                    .select(Projections.constructor(PostImageUrlResponse.class,
+                            postImageUrl.imageUrl,
+                            postImageUrl.id,
+                            postImageUrl.sequence
+                    ))
+                    .from(postImageUrl)
+                    .where(postImageUrl.postItem.id.eq(postResponse.getPostItemId()))
+                    .orderBy(postImageUrl.sequence.asc())
+                    .fetch();
+            postResponse.setImages(images);
+        });
 
         return new PageImpl<>(posts, pageable, total != null ? total : 0L);
     }
