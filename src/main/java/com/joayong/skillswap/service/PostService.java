@@ -197,7 +197,6 @@ public class PostService {
     public Map<String,Object> searchByOption(String keyword,Pageable pageable) {
         Page<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
 
-        if(posts.isEmpty()) throw new PostException(ErrorCode.SEARCH_NOT_FOUND);
         return Map.of(
                 "hasNext", posts.hasNext()
                 , "postList", posts
