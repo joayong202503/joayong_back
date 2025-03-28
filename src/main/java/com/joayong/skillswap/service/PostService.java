@@ -45,9 +45,9 @@ public class PostService {
 
     private final FileUploadUtil fileUploadUtil;
 
-    public void createPost(String email, PostCreateRequest request, List<MultipartFile> images) {
+    public void createPost(String email, PostCreateRequest request, List<MultipartFile> images){
         User founduser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
 
         CategoryTalent giveTalent = categoryTalentRepository.findById(request.getTalentGId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 줄 재능을 찾을 수 없습니다."));
@@ -92,7 +92,7 @@ public class PostService {
     //게시글 수정
     public void updatePost(String email, UpdatePostRequest request, List<MultipartFile> images) {
         User founduser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
         CategoryTalent giveTalent = categoryTalentRepository.findById(request.getTalentGId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 줄 재능을 찾을 수 없습니다."));
         CategoryTalent takeTalent = categoryTalentRepository.findById(request.getTalentTId())
@@ -100,10 +100,10 @@ public class PostService {
         CategoryRegion region = categoryRegionRepository.findById(request.getRegionId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 지역을 찾을 수 없습니다."));
 
-        postRepository.updatePost(founduser.getId(), request);
+        postRepository.updatePost(founduser.getId(),request);
 
-        if (request.getUpdateImage()) {
-            if (images == null) {
+        if(request.getUpdateImage()){
+            if(images == null){
                 return;
             }
             AtomicInteger index = new AtomicInteger(0); // AtomicInteger 초기화
@@ -127,13 +127,10 @@ public class PostService {
 
     //게시글 전체 조회
     @Transactional(readOnly = true)
-    public Map<String, Object> findPosts(Pageable pageable) {
+    public Map<String,Object> findPosts(Pageable pageable) {
         Page<PostResponse> posts = postRepository.findPosts(pageable);
-        if (posts.isEmpty() || posts == null) {
-            return Map.of(
-                    "hasNext", ""
-                    , "postList", ""
-            );
+        if(posts.isEmpty()||posts==null){
+            throw new PostException(ErrorCode.NOT_FOUND_POST);
         }
 
         return Map.of(
@@ -147,20 +144,20 @@ public class PostService {
                 .orElseThrow(() -> new PostException(ErrorCode.NOT_FOUND_POST));
     }
 
-    public void deletePost(String postId, String email) {
+    public void deletePost(String postId,String email) {
         Optional<User> foundUser = userRepository.findByEmail(email);
-        if (foundUser.isEmpty()) {
+        if(foundUser.isEmpty()){
             throw new UserException(ErrorCode.USER_NOT_FOUND);
         }
-        long deleted = postRepository.deletePost(postId, foundUser.get().getId());
-        if (deleted == 0) {
+        long deleted = postRepository.deletePost(postId,foundUser.get().getId());
+        if(deleted==0){
             throw new RuntimeException("삭제요청실패");
         }
     }
 
     public List<PostResponse> findMyPosts(String email) {
         Optional<User> foundUser = userRepository.findByEmail(email);
-        if (foundUser.isEmpty()) {
+        if(foundUser.isEmpty()){
             throw new UserException(ErrorCode.USER_NOT_FOUND);
         }
         return postRepository.findMyPosts(foundUser.get().getId());
@@ -170,21 +167,21 @@ public class PostService {
     public List<PostResponse> findUserPosts(String name) {
         userRepository.findByName(name).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         List<PostResponse> foundPosts = postRepository.findUserPosts(name);
-        if (foundPosts.isEmpty() || foundPosts == null) {
+        if(foundPosts.isEmpty() || foundPosts==null){
             throw new PostException(ErrorCode.NOT_FOUND_POST);
         }
         return foundPosts;
     }
 
-    public void viewCount(String postId, String email) {
-        log.info("postId : " + postId + ", email : " + email);
-        if (email.equals("anonymousUser")) {
+    public void viewCount(String postId,String email) {
+        log.info("postId : "+postId+", email : "+email);
+        if(email.equals("anonymousUser")){
             postRepository.viewCount(postId);
             log.info("뷰카운트 체크");
             return;
         }
         User founduser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(()->new UserException(ErrorCode.USER_NOT_FOUND));
         postRepository.viewCountWithId(postId, founduser.getId());
     }
 
@@ -197,10 +194,9 @@ public class PostService {
         return post.getViewCount();
     }
 
-    public Map<String, Object> searchByOption(String keyword, Pageable pageable) {
-        Page<PostResponse> posts = postRepository.searchPosts(keyword, pageable);
+    public Map<String,Object> searchByOption(String keyword,Pageable pageable) {
+        Page<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
 
-        if (posts.isEmpty()) throw new PostException(ErrorCode.SEARCH_NOT_FOUND);
         return Map.of(
                 "hasNext", posts.hasNext()
                 , "postList", posts

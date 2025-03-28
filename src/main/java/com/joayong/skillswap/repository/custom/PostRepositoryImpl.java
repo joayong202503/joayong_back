@@ -345,8 +345,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
         QCategoryRegion region = QCategoryRegion.categoryRegion;
-        QCategoryTalent talentT = new QCategoryTalent("talentT"); // 줄 재능 카테고리
-        QCategoryTalent talentG = new QCategoryTalent("talentG"); // 받을 재능 카테고리
+        QCategoryTalent talentT = new QCategoryTalent("talentT");
+        QCategoryTalent talentG = new QCategoryTalent("talentG");
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
 
         // ✅ 키워드 검색 조건
@@ -354,7 +354,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 ? null
                 : postItem.title.containsIgnoreCase(keyword)
                 .or(postItem.content.containsIgnoreCase(keyword))
-                .or(user.name.containsIgnoreCase(keyword))
+                .or(post.writer.name.containsIgnoreCase(keyword))
                 .or(region.name.containsIgnoreCase(keyword))
                 .or(talentT.name.containsIgnoreCase(keyword))
                 .or(talentG.name.containsIgnoreCase(keyword));
@@ -362,13 +362,13 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         // ✅ 데이터 조회
         List<PostResponse> posts = queryFactory
                 .select(Projections.fields(PostResponse.class,
-                        post.id.stringValue(),
+                        post.id.as("id"),
                         postItem.title,
                         postItem.content,
-                        postItem.id.stringValue().as("postItemId"),
-                        user.name,
-                        user.email,
-                        user.profileUrl.as("profileUrl"),
+                        postItem.id.as("postItemId"),
+                        post.writer.name.as("name"),
+                        post.writer.email.as("email"),
+                        post.writer.profileUrl.as("profileUrl"),
                         postItem.talentTId.id.as("talentTId"),
                         talentT.name.as("talentTName"),
                         postItem.talentGId.id.as("talentGId"),
@@ -380,8 +380,8 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                         post.viewCount
                 ))
                 .from(post)
-                .join(postItem).on(postItem.post.eq(post))
-                .join(user).on(post.writer.eq(user))
+                .join(post.postItem, postItem)
+                .join(post.writer, user)
                 .join(postItem.regionId, region)
                 .join(postItem.talentTId, talentT)
                 .join(postItem.talentGId, talentG)
@@ -393,14 +393,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .fetch();
 
         // ✅ 전체 개수 조회 (totalCount)
-        long total = queryFactory
+        Long total = queryFactory
                 .select(post.count())
                 .from(post)
+                .join(post.postItem, postItem)
+                .join(post.writer, user)
+                .join(postItem.regionId, region)
+                .join(postItem.talentTId, talentT)
+                .join(postItem.talentGId, talentG)
                 .where(post.deletedAt.isNull()
                         .and(keywordPredicate))
                 .fetchOne();
 
-        // ✅ PostItem과 PostImageUrl을 매핑하여 이미지 리스트 설정
         posts.forEach(postResponse -> {
             List<PostImageUrlResponse> images = queryFactory
                     .select(Projections.constructor(PostImageUrlResponse.class,
@@ -415,7 +419,6 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
             postResponse.setImages(images);
         });
 
-        // ✅ Page 객체 반환 (totalPages 자동 계산됨)
-        return new PageImpl<>(posts, pageable, total);
+        return new PageImpl<>(posts, pageable, total != null ? total : 0L);
     }
 }
