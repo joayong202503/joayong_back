@@ -1,0 +1,29 @@
+
+services:
+  backend:
+    build: .
+    ports:
+      - "8999:8999"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: 'dev'
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/joayong
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mariadb
+  db:
+    image: mariadb:10
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: mariadb
+      MYSQL_DATABASE: joayong
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pmariadb"]
+      interval: 5s
+      retries: 5
+      start_period: 10s
+volumes:
+  db-data:
