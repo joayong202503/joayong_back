@@ -33,8 +33,8 @@ public class RtcRoomController {
             @PathVariable int roomId,
             @AuthenticationPrincipal String email
     ) {
-        Boolean isSuccess = rtcRoomService.exitRtcRoomCode(roomId, email);
+        int count = rtcRoomService.exitRtcRoomCode(roomId, email);
 
-        return ResponseEntity.ok().body(Map.of("message", isSuccess));
+        return ResponseEntity.ok().body(Map.of("message", count));
     }
 }

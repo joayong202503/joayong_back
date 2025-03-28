@@ -22,4 +22,8 @@ public class RtcRoom {
     @Column(name = "isAvailable")
     @Builder.Default
     private String isAvailable = null;
+
+    @Column(name = "count")
+    @Builder.Default
+    private int count = 0;
 }
