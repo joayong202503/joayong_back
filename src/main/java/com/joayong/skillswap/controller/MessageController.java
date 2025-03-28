@@ -3,6 +3,7 @@ package com.joayong.skillswap.controller;
 import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
+import com.joayong.skillswap.domain.post.dto.response.PostSampleResponse;
 import com.joayong.skillswap.dto.common.PageResponse;
 import com.joayong.skillswap.service.MessageService;
 import lombok.RequiredArgsConstructor;
@@ -122,5 +123,14 @@ public class MessageController {
         MessageDetailResponse messageUrlList = messageService.getMessageUrlList(messageId);
 
         return ResponseEntity.ok().body(messageUrlList);
+    }
+
+    @GetMapping("/postInfo/{messageId}")
+    public ResponseEntity<?> getPostInfo(
+            @PathVariable String messageId
+    ){
+        PostSampleResponse postInfo = messageService.getPostInfo(messageId);
+
+        return ResponseEntity.ok().body(postInfo);
     }
 }
