@@ -6,6 +6,8 @@ import com.joayong.skillswap.domain.message.dto.request.MessageRequest;
 import com.joayong.skillswap.domain.message.dto.response.MessageDetailResponse;
 import com.joayong.skillswap.domain.message.dto.response.MessageResponse;
 import com.joayong.skillswap.domain.message.entity.Message;
+import com.joayong.skillswap.domain.post.dto.response.PostResponse;
+import com.joayong.skillswap.domain.post.dto.response.PostSampleResponse;
 import com.joayong.skillswap.domain.post.entity.Post;
 import com.joayong.skillswap.domain.user.entity.User;
 import com.joayong.skillswap.dto.common.PageResponse;
@@ -371,6 +373,21 @@ public class MessageService {
                 () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
         );
         return MessageDetailResponse.toDto(message);
+    }
+
+    // 메세지id 로 포스트 정보 조회
+    public PostSampleResponse getPostInfo(String messageId){
+        Message message = messageRepository.findById(messageId).orElseThrow(
+                () -> new PostException(ErrorCode.NOT_FOUND_MESSAGE)
+        );
+        Post post = message.getPost();
+        return PostSampleResponse.builder()
+                .postId(post.getId())
+                .writer(post.getWriter().getName())
+                .sender(message.getSender().getName())
+                .talentTName(post.getPostItem().getTalentTId().getName())
+                .talentGName(post.getPostItem().getTalentGId().getName())
+                .build();
     }
 
 }
