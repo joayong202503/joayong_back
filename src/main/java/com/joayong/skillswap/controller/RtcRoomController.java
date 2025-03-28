@@ -1,6 +1,7 @@
 package com.joayong.skillswap.controller;
 
 
+import com.joayong.skillswap.domain.room.dto.RtcResponse;
 import com.joayong.skillswap.service.RtcRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +25,7 @@ public class RtcRoomController {
             @PathVariable String messageId ,
             @AuthenticationPrincipal String email
     ){
-
-        int rtcRoomCode = rtcRoomService.getRtcRoomCode(messageId, email);
+        RtcResponse rtcRoomCode = rtcRoomService.getRtcRoomCode(messageId, email);
 
         return ResponseEntity.ok().body(rtcRoomCode);
     }
