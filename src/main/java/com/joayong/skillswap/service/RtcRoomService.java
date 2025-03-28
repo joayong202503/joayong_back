@@ -37,4 +37,17 @@ public class RtcRoomService {
 
         return RtcResponse.builder().roomId(rtcRoom.getRoomId()).isNew(false).build();
     }
+
+    public Boolean exitRtcRoomCode(int roomId, String email) {
+
+        RtcRoom rtcRoom = rtcRoomRepository.findById(roomId).orElse(null);
+
+        if (rtcRoom == null) {
+            throw new PostException(ErrorCode.NOT_FOUND_ROOM);
+        }
+        rtcRoom.setIsAvailable(null);
+        rtcRoomRepository.save(rtcRoom);
+
+        return true;
+    }
 }

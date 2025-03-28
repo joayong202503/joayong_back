@@ -6,10 +6,7 @@ import com.joayong.skillswap.service.RtcRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -22,11 +19,22 @@ public class RtcRoomController {
 
     @GetMapping("/{messageId}")
     public ResponseEntity<?> getRtcRoomCode(
-            @PathVariable String messageId ,
+            @PathVariable String messageId,
             @AuthenticationPrincipal String email
-    ){
+    ) {
         RtcResponse rtcRoomCode = rtcRoomService.getRtcRoomCode(messageId, email);
 
         return ResponseEntity.ok().body(rtcRoomCode);
+    }
+
+
+    @PostMapping("/{roomId}")
+    public ResponseEntity<?> exitRtcRoomCode(
+            @PathVariable int roomId,
+            @AuthenticationPrincipal String email
+    ) {
+        Boolean isSuccess = rtcRoomService.exitRtcRoomCode(roomId, email);
+
+        return ResponseEntity.ok().body(Map.of("message", isSuccess));
     }
 }
