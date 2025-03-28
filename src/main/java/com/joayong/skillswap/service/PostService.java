@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -130,7 +131,10 @@ public class PostService {
     public Map<String,Object> findPosts(Pageable pageable) {
         Page<PostResponse> posts = postRepository.findPosts(pageable);
         if(posts.isEmpty()||posts==null){
-            throw new PostException(ErrorCode.NOT_FOUND_POST);
+            return Map.of(
+                    "hasNext", ""
+                    , "postList", ""
+            );
         }
 
         return Map.of(
@@ -168,7 +172,7 @@ public class PostService {
         userRepository.findByName(name).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         List<PostResponse> foundPosts = postRepository.findUserPosts(name);
         if(foundPosts.isEmpty() || foundPosts==null){
-            throw new PostException(ErrorCode.NOT_FOUND_POST);
+            return new ArrayList<>();
         }
         return foundPosts;
     }
@@ -197,7 +201,6 @@ public class PostService {
     public Map<String,Object> searchByOption(String keyword,Pageable pageable) {
         Page<PostResponse> posts = postRepository.searchPosts(keyword,pageable);
 
-        if(posts.isEmpty()) throw new PostException(ErrorCode.SEARCH_NOT_FOUND);
         return Map.of(
                 "hasNext", posts.hasNext()
                 , "postList", posts
