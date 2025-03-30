@@ -1,21 +1,6 @@
 server:
   port: 8999
 
-# database setting
-spring:
-  mail:
-    host: smtp.naver.com
-    port: 465
-    username: riyo1753@naver.com
-    password: PD3859M7XWCJ
-    protocol: smtp
-    properties:
-      mail:
-        smtp:
-          auth: true
-          ssl:
-            enable: true
-
   servlet:
     multipart:
       max-file-size: 10MB
@@ -30,12 +15,12 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MariaDB106Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
-        show_sql: true 
+        show_sql: true
         type: trace
 
 # log level setting
@@ -62,7 +47,19 @@ file:
 
 jwt:
   secret-key: L6h/xMxGO53HQmR/OB99qR/y0kTr2CAyaI5RqBIX184=  # 토큰발급시와 토큰위조검사시 사용할 서명
-#  access-token-validity-time: 3600000  # 1시간 (ms)
+  #  access-token-validity-time: 3600000  # 1시간 (ms)
   access-token-validity-time: 36000000  # 10시간 (ms)
   refresh-token-validity-time: 604800000 # 7일 (ms)
+
+cloud:
+  aws:
+    credentials:
+      access-key: your-access-key
+      secret-key: your-secret-key
+    region:
+      static: ap-northeast-2  # 서울 리전
+    stack:
+      auto: false
+    s3:
+      bucket: your-bucket-name
 

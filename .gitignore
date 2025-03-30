@@ -1,4 +1,8 @@
 HELP.md
+.yml
+docker-compose.yml
+application-dev.yml
+application.yml
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
