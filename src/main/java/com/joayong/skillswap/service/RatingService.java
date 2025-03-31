@@ -285,6 +285,17 @@ public class RatingService {
 
         // 전체 데이터 개수 조회
         long totalCount = ratingRepository.countDistinctMessageIdsByRatingId(rating.getId());
+        if(totalCount == 0) {
+            return PageResponse.<RatingResponse>builder()
+                    .totalCount(0)
+                    .totalPages(0)
+                    .currentPage(pageable.getPageNumber() + 1) // 클라이언트에선 1페이지가 첫페이지니까 더해줌
+                    .hasNext(false)
+                    .hasPrevious(false)
+                    .pageSize(pageable.getPageSize())
+                    .data(Collections.emptyList()) // 빈 리스트 반환
+                    .build();
+        }
 
         List<Tuple> ratingTupleList = ratingRepository.getRatingList(rating.getId(), pageable);
 
