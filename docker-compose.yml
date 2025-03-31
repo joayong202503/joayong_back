@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_PROFILES_ACTIVE: 'dev'
+      SPRING_PROFILES_ACTIVE: 'default'
       SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/joayong
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: mariadb

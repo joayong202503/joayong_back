@@ -12,7 +12,7 @@ COPY . /app
 RUN ./gradlew clean build -x test
 
 # JAR_FILE 변수 생성
-ARG JAR_FILE=build/libs/joayong-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=build/libs/skillswap-0.0.1-SNAPSHOT.jar
 
 # 빌드된 JAR파일을 복사해서 app.jar로 이름 변경
 COPY ${JAR_FILE} app.jar
