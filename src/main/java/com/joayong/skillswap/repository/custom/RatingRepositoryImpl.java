@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -69,18 +70,16 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
         QUser user = QUser.user;
 
         log.info("ratingId dddd: {}",ratingId);
-        long count = factory.select(ratingDetail.message.id.countDistinct()) // 메시지 ID의 중복 제거 후 개수 카운트
+        long count = Optional.ofNullable(factory.select(ratingDetail.message.id.countDistinct())
                 .from(rating)
                 .leftJoin(ratingDetail).on(rating.id.eq(ratingDetail.rating.id))
                 .join(reviewItem).on(ratingDetail.reviewItem.id.eq(reviewItem.id))
                 .join(user).on(ratingDetail.user.id.eq(user.id))
                 .where(
                         rating.id.eq(ratingId)
-                                .and(rating.user.id.ne(ratingDetail.user.id)) // 내 것 제외 조건
+                                .and(rating.user.id.ne(ratingDetail.user.id))
                 )
-                .fetchOne();
-
-        log.info("count : {}",count);
+                .fetchOne()).orElse(0L);
 
         return count;
     }

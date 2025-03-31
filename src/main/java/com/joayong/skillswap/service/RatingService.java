@@ -61,11 +61,12 @@ public class RatingService {
         // 리뷰어가 게시글 작성자인 경우
         if (user.equals(writer)) {
             log.info("writer : {}", writer);
+            User sender = message.getSender();
 
-            Rating rating = Optional.ofNullable(writer.getRating())
+            Rating rating = Optional.ofNullable(sender.getRating())
                     .orElseGet(() -> {
-                        Rating newRating = Rating.builder().user(writer).build();
-                        writer.setRating(newRating);
+                        Rating newRating = Rating.builder().user(sender).build();
+                        sender.setRating(newRating);
                         ratingRepository.save(newRating);
 
                         log.info("newrating : {}", newRating);
@@ -122,13 +123,11 @@ public class RatingService {
 
             return total;
         } else {
-            User sender = message.getSender();
-            log.info("sender : {}", sender);
 
-            Rating rating = Optional.ofNullable(sender.getRating())
+            Rating rating = Optional.ofNullable(writer.getRating())
                     .orElseGet(() -> {
-                        Rating newRating = Rating.builder().user(sender).build();
-                        sender.setRating(newRating);
+                        Rating newRating = Rating.builder().user(writer).build();
+                        writer.setRating(newRating);
                         ratingRepository.save(newRating);
 
                         log.info("newrating : {}", newRating);
