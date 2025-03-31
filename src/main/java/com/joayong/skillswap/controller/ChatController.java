@@ -1,6 +1,7 @@
 package com.joayong.skillswap.controller;
 
 import com.joayong.skillswap.domain.chat.dto.request.ChatRoomRequest;
+import com.joayong.skillswap.domain.chat.dto.request.EnteredChatRequest;
 import com.joayong.skillswap.domain.chat.dto.response.ChatResponse;
 import com.joayong.skillswap.domain.chat.dto.response.ChatRoomResponse;
 import com.joayong.skillswap.domain.chat.entity.ChatMessage;

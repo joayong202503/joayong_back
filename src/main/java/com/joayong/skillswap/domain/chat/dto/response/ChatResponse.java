@@ -18,6 +18,7 @@ public class ChatResponse {
     private String senderId;
     private String content;
     private LocalDateTime sentAt;
+    private String type;
 
     public static ChatResponse of(ChatMessage chatMessage){
         return ChatResponse.builder()
@@ -25,6 +26,7 @@ public class ChatResponse {
                 .senderId(chatMessage.getSenderId())
                 .content(chatMessage.getContent())
                 .sentAt(chatMessage.getSentAt())
+                .type("M")
                 .build();
     }
 }
