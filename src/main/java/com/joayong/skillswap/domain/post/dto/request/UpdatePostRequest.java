@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -26,4 +28,6 @@ public class UpdatePostRequest {
     private Long regionId;
     @JsonProperty("update-image")
     private Boolean updateImage;
+    @JsonProperty("delete-image-ids")
+    private List<String> deleteImageIds;  // 삭제할 이미지 ID 목록 추가
 }

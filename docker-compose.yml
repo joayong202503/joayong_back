@@ -1,0 +1,42 @@
+services:
+  backend:
+    build: .
+    container_name: spring-app
+    ports:
+      - "8999:8999"
+    depends_on:
+      - db
+    environment:
+      SPRING_PROFILES_ACTIVE: 'dev'
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/joayong
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mariadb
+    restart: always
+    networks:
+      - mynetwork
+
+  db:
+    image: mariadb:10
+    container_name: mariadb
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: mariadb
+      MYSQL_DATABASE: joayong
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -uroot -pmariadb -e 'SELECT 1'"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+    restart: always
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  db-data:

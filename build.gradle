@@ -38,6 +38,10 @@ dependencies {
     //	캐싱 관련 의존성
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
+    //아마존 s3 연결 의존성
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'software.amazon.awssdk:s3:2.20.127'
+
     // JWT 관련 의존성 (추후 JWT 구현시 필요)
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'

@@ -302,7 +302,7 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
         QPostItem postItem = QPostItem.postItem;
         QUser user = QUser.user;
         QPostImageUrl postImageUrl = QPostImageUrl.postImageUrl;
-        //업데이트전 내용
+
         // 업데이트 전 내용 조회
         Post original = queryFactory
                 .selectFrom(post)
@@ -329,14 +329,17 @@ public class PostRepositoryImpl implements PostRepositoryCustom{
                 .where(postItem.post.id.eq(original.getId()))
                 .execute();
 
-        // request.imageUpdate가 true일 때만 이미지 URL 삭제
+        // 이미지 삭제 처리
         if (request.getUpdateImage()) {
-            queryFactory
-                    .delete(postImageUrl)
-                    .where(postImageUrl.postItem.id.eq(original.getPostItem().getId()))
-                    .execute();
+            if (request.getDeleteImageIds() != null && !request.getDeleteImageIds().isEmpty()) {
+                // 선택된 이미지만 삭제
+                queryFactory
+                        .delete(postImageUrl)
+                        .where(postImageUrl.postItem.id.eq(original.getPostItem().getId())
+                                .and(postImageUrl.id.in(request.getDeleteImageIds())))
+                        .execute();
+            }
         }
-
     }
 
     @Override
