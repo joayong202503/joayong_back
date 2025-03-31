@@ -44,8 +44,13 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
                 .leftJoin(ratingDetail).on(rating.id.eq(ratingDetail.rating.id))
                 .join(reviewItem).on(ratingDetail.reviewItem.id.eq(reviewItem.id))
                 .join(user).on(ratingDetail.user.id.eq(user.id))
-                .where(rating.id.eq(ratingId))
-                .orderBy(ratingDetail.message.id.asc(), ratingDetail.reviewItem.id.asc())
+                .where(rating.id.eq(ratingId)
+                        .and(rating.user.id.ne(ratingDetail.user.id))
+                )
+                .orderBy(
+                        ratingDetail.createdAt.desc(),
+                        ratingDetail.message.id.asc(),
+                        ratingDetail.reviewItem.id.asc())
                 .offset(pageable.getOffset()*5)
                 .limit(pageable.getPageSize()*5)
                 .fetch();
@@ -55,4 +60,30 @@ public class RatingRepositoryImpl implements RatingRepositoryCustom {
         return fetch;
 
     }
+
+    @Override
+    public long countDistinctMessageIdsByRatingId(String ratingId) {
+        QRating rating = QRating.rating;
+        QRatingDetail ratingDetail = QRatingDetail.ratingDetail;
+        QReviewItem reviewItem = QReviewItem.reviewItem;
+        QUser user = QUser.user;
+
+        log.info("ratingId dddd: {}",ratingId);
+        long count = factory.select(ratingDetail.message.id.countDistinct()) // 메시지 ID의 중복 제거 후 개수 카운트
+                .from(rating)
+                .leftJoin(ratingDetail).on(rating.id.eq(ratingDetail.rating.id))
+                .join(reviewItem).on(ratingDetail.reviewItem.id.eq(reviewItem.id))
+                .join(user).on(ratingDetail.user.id.eq(user.id))
+                .where(
+                        rating.id.eq(ratingId)
+                                .and(rating.user.id.ne(ratingDetail.user.id)) // 내 것 제외 조건
+                )
+                .fetchOne();
+
+        log.info("count : {}",count);
+
+        return count;
+    }
+
+
 }

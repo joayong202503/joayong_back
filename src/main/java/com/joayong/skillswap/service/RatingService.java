@@ -224,7 +224,7 @@ public class RatingService {
         }
 
         // 전체 데이터 개수 조회
-        long totalCount = ratingDetailRepository.countDistinctMessageIdsByRatingId(rating.getId());
+        long totalCount = ratingRepository.countDistinctMessageIdsByRatingId(rating.getId());
 
         List<Tuple> ratingTupleList = ratingRepository.getRatingList(rating.getId(), pageable);
 
