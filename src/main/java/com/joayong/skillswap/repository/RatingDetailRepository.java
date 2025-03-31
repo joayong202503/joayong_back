@@ -18,7 +18,4 @@ public interface RatingDetailRepository extends JpaRepository<RatingDetail,Strin
     List<String> findDistinctMessageIds();
 
     List<RatingDetail> findByPostId(String postId);
-
-    @Query(value = "SELECT COUNT(DISTINCT message_id) FROM rating_detail_tb WHERE rating_id = :ratingId", nativeQuery = true)
-    long countDistinctMessageIdsByRatingId(@Param("ratingId") String ratingId);
 }
