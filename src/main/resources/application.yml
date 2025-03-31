@@ -22,9 +22,9 @@ spring:
       max-request-size: 100MB
 
   datasource:
-    url: jdbc:mariadb://localhost:3306/joayong
+    url: jdbc:mariadb://joayong-database.cxqg0uy8gnw9.ap-northeast-2.rds.amazonaws.com:3306/joayong
     username: root
-    password: mariadb
+    password: dnwnrhdfyd12!
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
