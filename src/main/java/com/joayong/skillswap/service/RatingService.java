@@ -58,71 +58,132 @@ public class RatingService {
         Post post = message.getPost();
         User writer = post.getWriter();
 
-        log.info("writer : {}", writer);
+        // 리뷰어가 게시글 작성자인 경우
+        if (user.equals(writer)) {
+            log.info("writer : {}", writer);
 
-        Rating rating = Optional.ofNullable(writer.getRating())
-                .orElseGet(() -> {
-                    Rating newRating = Rating.builder().user(writer).build();
-                    writer.setRating(newRating);
-                    ratingRepository.save(newRating);
+            Rating rating = Optional.ofNullable(writer.getRating())
+                    .orElseGet(() -> {
+                        Rating newRating = Rating.builder().user(writer).build();
+                        writer.setRating(newRating);
+                        ratingRepository.save(newRating);
 
-                    log.info("newrating : {}", newRating);
-                    return newRating;
-                });
-        log.info("rating : {}", rating);
+                        log.info("newrating : {}", newRating);
+                        return newRating;
+                    });
+            log.info("rating : {}", rating);
 
-        int size = rating.getRatingDetails().size();
+            int size = rating.getRatingDetails().size();
 
-        log.info(" rating:{}", rating);
+            log.info(" rating:{}", rating);
 
-        List<RatingDetailRequest> ratingList = dto.getRatingDetailtList();
+            List<RatingDetailRequest> ratingList = dto.getRatingDetailtList();
 
-        AtomicInteger newRating = new AtomicInteger(0);
+            AtomicInteger newRating = new AtomicInteger(0);
 
-        List<RatingDetail> ratingDetailList
-                = ratingList.stream()
-                .map(ratingDto -> {
-                    RatingDetail ratingDetail = RatingDetail.builder()
-                            .ratingValue(ratingDto.getRating())
-                            .reviewItem(reviewItemRepository.findById(ratingDto.getIndex()).orElseThrow(
-                                    () -> new PostException(ErrorCode.INVALID_REVIEW_INDEX)
-                            ))
-                            .user(user)
-                            .message(message)
-                            .post(post)
-                            .rating(rating)
-                            .build();
-                    ratingDetailRepository.save(ratingDetail);
-                    newRating.addAndGet(ratingDto.getRating());
-                    return ratingDetail;
-                }).toList();
+            List<RatingDetail> ratingDetailList
+                    = ratingList.stream()
+                    .map(ratingDto -> {
+                        RatingDetail ratingDetail = RatingDetail.builder()
+                                .ratingValue(ratingDto.getRating())
+                                .reviewItem(reviewItemRepository.findById(ratingDto.getIndex()).orElseThrow(
+                                        () -> new PostException(ErrorCode.INVALID_REVIEW_INDEX)
+                                ))
+                                .user(user)
+                                .message(message)
+                                .post(post)
+                                .rating(rating)
+                                .build();
+                        ratingDetailRepository.save(ratingDetail);
+                        newRating.addAndGet(ratingDto.getRating());
+                        return ratingDetail;
+                    }).toList();
 
-        double preTotal = rating.getTotalRating();
+            double preTotal = rating.getTotalRating();
 
-        double total = ((preTotal * size) + newRating.get()) / (size + ratingDetailList.size());
+            double total = ((preTotal * size) + newRating.get()) / (size + ratingDetailList.size());
 
-        log.info("total: {}", total);
+            log.info("total: {}", total);
 
-        // 별점 평점 구하기
-        rating.setTotalRating(total);
-        ratingRepository.save(rating);
+            // 별점 평점 구하기
+            rating.setTotalRating(total);
+            ratingRepository.save(rating);
 
-        message.setMsgStatus(MessageStatus.C);
-        messageRepository.save(message);
+            MessageStatus msgStatus = message.getMsgStatus();
+            if (msgStatus.equals(MessageStatus.R)) {
+                message.setMsgStatus(MessageStatus.RW);
+            } else if (msgStatus.equals(MessageStatus.RS)) {
+                message.setMsgStatus(MessageStatus.C);
+            }
+            messageRepository.save(message);
 
-        // rtc 방 빼기 (강의 완료 후 방 빼고 있지만 나중엔 해당 방 사용안하면 없앨 예정)
-        RtcRoom rtcRoom = rtcRoomRepository.findByIsAvailable(message.getId()).orElse(null);
+            log.info("rating : {}", rating);
+            log.info("ratingDetailList : {}", ratingDetailList);
 
-        if(rtcRoom != null){
-            rtcRoom.setIsAvailable(null);
-            rtcRoomRepository.save(rtcRoom);
+            return total;
+        } else {
+            User sender = message.getSender();
+            log.info("sender : {}", sender);
+
+            Rating rating = Optional.ofNullable(sender.getRating())
+                    .orElseGet(() -> {
+                        Rating newRating = Rating.builder().user(sender).build();
+                        sender.setRating(newRating);
+                        ratingRepository.save(newRating);
+
+                        log.info("newrating : {}", newRating);
+                        return newRating;
+                    });
+            log.info("rating : {}", rating);
+
+            int size = rating.getRatingDetails().size();
+
+
+            List<RatingDetailRequest> ratingList = dto.getRatingDetailtList();
+
+            AtomicInteger newRating = new AtomicInteger(0);
+
+            List<RatingDetail> ratingDetailList
+                    = ratingList.stream()
+                    .map(ratingDto -> {
+                        RatingDetail ratingDetail = RatingDetail.builder()
+                                .ratingValue(ratingDto.getRating())
+                                .reviewItem(reviewItemRepository.findById(ratingDto.getIndex()).orElseThrow(
+                                        () -> new PostException(ErrorCode.INVALID_REVIEW_INDEX)
+                                ))
+                                .user(user)
+                                .message(message)
+                                .post(post)
+                                .rating(rating)
+                                .build();
+                        ratingDetailRepository.save(ratingDetail);
+                        newRating.addAndGet(ratingDto.getRating());
+                        return ratingDetail;
+                    }).toList();
+
+            double preTotal = rating.getTotalRating();
+
+            double total = ((preTotal * size) + newRating.get()) / (size + ratingDetailList.size());
+
+            log.info("total: {}", total);
+
+            // 별점 평점 구하기
+            rating.setTotalRating(total);
+            ratingRepository.save(rating);
+
+            MessageStatus msgStatus = message.getMsgStatus();
+            if (msgStatus.equals(MessageStatus.R)) {
+                message.setMsgStatus(MessageStatus.RS);
+            } else if (msgStatus.equals(MessageStatus.RW)) {
+                message.setMsgStatus(MessageStatus.C);
+            }
+            messageRepository.save(message);
+
+            log.info("rating : {}", rating);
+            log.info("ratingDetailList : {}", ratingDetailList);
+
+            return total;
         }
-
-        log.info("rating : {}", rating);
-        log.info("ratingDetailList : {}", ratingDetailList);
-
-        return total;
-
     }
 
     private double getCalculateRating(Rating rating) {
@@ -261,11 +322,11 @@ public class RatingService {
             } else {
                 //없는 경우 새로 put
                 RatingDetailResponse detailResponse = RatingDetailResponse.builder()
-                        .ratingDetailId(tuple.get(1,String.class))
+                        .ratingDetailId(tuple.get(1, String.class))
                         .postId(tuple.get(5, String.class))
                         .messageId(tuple.get(6, String.class))
                         .reviewer(tuple.get(7, String.class))
-                        .reviewerProfileUrl(tuple.get(8,String.class))
+                        .reviewerProfileUrl(tuple.get(8, String.class))
                         .createAt(tuple.get(9, LocalDateTime.class))
                         .reviewList(new ArrayList<>())
                         .build();
