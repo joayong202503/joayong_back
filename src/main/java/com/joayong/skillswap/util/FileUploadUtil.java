@@ -46,7 +46,7 @@ public class FileUploadUtil {
             PutObjectResponse response = s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(inputStream, file.getSize()));
 
             log.info("File uploaded to S3: {}", fileKey);
-            return "http://" + bucketName + ".s3.amazonaws.com/" + fileKey; // 업로드된 S3 URL 반환
+            return "https://" + bucketName + ".s3.amazonaws.com/" + fileKey; // 업로드된 S3 URL 반환
         } catch (IOException e) {
             log.error("Failed to upload file to S3: {}", newFilename, e);
             throw new PostException(ErrorCode.FILE_UPLOAD_ERROR);

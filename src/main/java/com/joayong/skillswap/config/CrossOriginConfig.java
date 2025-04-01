@@ -7,8 +7,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CrossOriginConfig implements WebMvcConfigurer {
     private String[] urls = {
-            "http://www.lesson2you.site",
-            "http://www.lesson2you.site.s3-website.ap-northeast-2.amazonaws.com"
+            "https://www.lesson2you.site",
+            "https://www.lesson2you.site.s3-website.ap-northeast-2.amazonaws.com"
     };
     @Override
     public void addCorsMappings(CorsRegistry registry) {
