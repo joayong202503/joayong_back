@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CrossOriginConfig implements WebMvcConfigurer {
     private String[] urls = {
+            "https://lesson2you.site",
             "https://www.lesson2you.site",
             "https://www.lesson2you.site.s3-website.ap-northeast-2.amazonaws.com"
     };
