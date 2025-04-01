@@ -28,7 +28,10 @@ public class FileUploadUtil {
     @Value("${cloud.aws.s3.folder}")
     private String folderName;
 
-    // S3에 이미지 업로드 후 URL 반환
+    @Value("${cloud.aws.cloudfront.domain}")  // CloudFront 도메인 주입
+    private String cloudFrontDomain;
+
+    // S3에 이미지 업로드 후 CloudFront URL 반환
     public String saveFile(MultipartFile file) {
         validateImages(file);
         String originalFilename = file.getOriginalFilename();
@@ -46,7 +49,7 @@ public class FileUploadUtil {
             PutObjectResponse response = s3Client.putObject(putObjectRequest, software.amazon.awssdk.core.sync.RequestBody.fromInputStream(inputStream, file.getSize()));
 
             log.info("File uploaded to S3: {}", fileKey);
-            return "https://" + bucketName + ".s3.amazonaws.com/" + fileKey; // 업로드된 S3 URL 반환
+            return "https://" + cloudFrontDomain + "/" + fileKey;  // CloudFront URL 반환
         } catch (IOException e) {
             log.error("Failed to upload file to S3: {}", newFilename, e);
             throw new PostException(ErrorCode.FILE_UPLOAD_ERROR);
