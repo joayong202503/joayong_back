@@ -18,11 +18,4 @@ public class WebResourceConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/uploads/**") //서버 url
                 .addResourceLocations("file:" + fileUploadConfig.getLocation());    //로컬 url
     }
-
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        // Forward all requests to index.html except for /api/** and /uploads/**
-        registry.addViewController("/**/{path:[^\\.]*}")
-                .setViewName("forward:/");
-    }
 }
