@@ -21,11 +21,7 @@ jobs:
 
       - name: Write the application.yml
         run: |
-          cat <<EOF > ./src/main/resources/application.yml
-          ${{ secrets.APPLICATION_YML }}
-          EOF
-#        run: |
-#          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
 
 
 
