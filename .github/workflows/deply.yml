@@ -19,11 +19,14 @@ jobs:
       - name: Make directory for deliver
         run: mkdir deploy
 
+      - name: Check shell environment
+        run: |
+          echo "Shell: $SHELL"
+          ps -p $$
+
       - name: Write the application.yml
         run: |
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/application.yml
-
-
 
 
       ## springboot 도커 이미지 빌드 후 도커허브에 push하기
